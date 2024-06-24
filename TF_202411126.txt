@@ -1,0 +1,3063 @@
+#include "pch.h"
+#include <iostream>
+#include <conio.h>
+#include <cstdlib>
+#include <cstdio>
+#include <ctime>
+#include <string>
+#include <chrono>
+#include <clocale>
+
+using namespace System;
+using namespace std;
+
+struct Direccion {
+	char distrito_opcion;
+	string distrito;
+	int numero_domicilio;
+	int numero_urbanizacion;
+	string Urbanizacion;
+	string calle_avenida;
+	int codigo_postal;
+	string ciudad;
+};
+
+struct Envio {
+	Direccion domicilio;
+	char tipo_direccion;
+};
+
+struct Recogo {
+	char local;
+	string distrito;
+	string urbanizacion;
+	string avenida;
+	int numero_avenida;
+};
+
+struct Entrega {
+	bool entregado;
+	char tipo_entrega;
+	Envio envio_a_domicilio;
+	Recogo recogo_en_tienda;
+};
+
+struct PagoLibro {
+	char plataforma;
+	string metodo_pago;
+	int tarjeta;
+	int cvv;
+};
+
+struct Organización {
+	char organización;
+	string organización_nombre;
+	string correo_organización;
+};
+
+struct DatosPersona {
+	string nombres;
+	string apellidos;
+	char género;
+	string correo;
+	string DNI;
+	Organización representante;
+};
+
+struct CompraxWhatsApp {
+	string codigo_maestro;
+	bool codigo_verificado;
+	bool registro_libro;
+	bool compra_finalizada;
+};
+
+struct DatosLibro {
+	float precio;
+	string nombre;
+	int codigo;
+	string tipo_libro;
+};
+
+struct CompraxApp {
+	char catálogo;
+	char opción;
+	char confirmaciones;
+	DatosLibro datos_libro;
+	PagoLibro datos_pago;
+	bool compra_finalizada;
+};
+
+struct CompraLibro {
+	char tipo_compra;
+	CompraxWhatsApp WhatsApp;
+	CompraxApp App;
+};
+
+struct Venta {
+	DatosPersona cliente;
+	CompraLibro compra;
+	Entrega entrega;
+};
+
+void Menu(Venta* arreglo, int n);
+void Reportes(Venta* arreglo, int n);
+void ProcesarCompra(Venta* arreglo, int n);
+
+void Registro(Venta* arreglo, int n);
+void RegistroIndependiente(int n, Venta* arreglo);
+void RegistroEmpresa(int n, Venta* arreglo);
+
+void TipoCompra(Venta* arreglo, int n);
+
+void CompraWhatsApp(Venta* arreglo, int n);
+void CodigoMaestro(Venta* arreglo, int n);
+
+void CompraApp(Venta* arreglo, int n);
+void CatálogoComics(int c1, int c2, int c3, int c4, int c5, int s1, int s2, int s3, int s4, int s5);
+void CatálogoMangas(int c6, int c7, int c8, int c9, int c10, int s1, int s2, int s3, int s4, int s5);
+void ElegirLibro(Venta* arreglo, int n, int comic1, int comic2, int comic3, int comic4, int comic5, int manga1, int manga2, int manga3, int manga4, int manga5, int s1, int s2, int s3, int s4, int s5, int s6, int s7, int s8, int s9, int s10);
+void Pago(Venta* arreglo, int n);
+
+void RealizarEntrega(Venta* arreglo, int n);
+void MetodoEntregaLibro(int n, Venta* arreglo);
+void EnvioDomicilio(int n, Venta* arreglo);
+void EntregaLocal(int n, Venta* arreglo);
+void DireccionManual(Venta* arreglo, int n);
+
+void DireccionAutomatica(Venta* arreglo, int n);
+void AutoUrbanizacion(Venta* arreglo, int n);
+void AutoCalles(Venta* arreglo, int n);
+
+void Boleta(Venta* arreglo, int n);
+void NuevoComprador(Venta* arreglo, int n);
+
+void ReporteRecaudacionAnual(Venta* arreglo, int n);
+void ReportePorcentajeVentasModalidad(Venta* arreglo, int n);
+void ReporteVentasTotales(Venta* arreglo, int n);
+void ReporteVentasFemeninas(Venta* arreglo, int n);
+void ReportePanelDireccion(Venta* arreglo, int n);
+void ReporteEventos(Venta* arreglo, int n);
+
+int main()
+{
+	setlocale(LC_CTYPE, "Spanish");
+	Venta* registro = new Venta[50];
+	int numero_arreglo = 0;
+	cout << "\n\t\t\t  =========================================================" << endl;
+	cout << "\t\t\t                       BIBLIOTECA ATLAS" << endl;
+	cout << "\t\t\t  =========================================================" << endl;
+	cout << "\t\t\t   ATLAS carga con la enorme responsabilidad de compartir" << endl;
+	cout << "\t\t\t   con el mundo los universos que autores de alrededor del" << endl;
+	cout << "\t\t\t   globo han imaginado y transmitido con puño y letra" << endl;
+	cout << "\t\t\t  =========================================================" << endl << endl;
+	Menu(registro, numero_arreglo);
+	return 0;
+}
+
+void Menu(Venta* arreglo, int n)
+{
+	char menu, opcion_salir;
+	cout << "\n\t----------------------";
+	cout << "\n\t     OPERACIONES";
+	cout << "\n\t----------------------";
+	cout << "\n\t (1) Reporte de ventas";
+	cout << "\n\t (2) Nuevo cliente";
+	cout << "\n\t (3) Salir";
+	cout << "\n\t----------------------\n";
+	do {
+		cout << "\n\tQue operacion desea hacer hoy?";
+		cout << "\n\t#"; cin >> menu;
+		if (menu != '1' && menu != '2' && menu != '3')
+			cout << "\n\tOpcion invalida, intente de nuevo...";
+	} while (menu != '1' && menu != '2' && menu != '3');
+
+	switch (menu)
+	{
+	case '1':
+		Reportes(arreglo, n);
+		break;
+	case '2':
+		ProcesarCompra(arreglo, n);
+		break;
+	case '3':
+		do {
+			cout << "\n\tSalir?\n";
+			cout << "\t(S: si / N: no): "; cin >> opcion_salir;
+			if (opcion_salir == 's' || opcion_salir == 'n')
+				opcion_salir = toupper(opcion_salir);
+			if (opcion_salir != 'S' && opcion_salir != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...\n";
+		} while (opcion_salir != 'S' && opcion_salir != 'N');
+		switch (opcion_salir)
+		{
+		case 'S':
+			cout << "\n\tHasta la proxima!\n";
+			exit(0);
+			break;
+		case 'N':
+			Menu(arreglo, n);
+			break;
+		}
+		break;
+	}
+
+}
+
+void ProcesarCompra(Venta* arreglo, int n)
+{
+	n = 0;
+	for (int i = 0; i < 50; i++)
+		if (arreglo[i].compra.App.compra_finalizada == true || arreglo[i].compra.WhatsApp.compra_finalizada == true)
+			n++;
+	NuevoComprador(arreglo, n);
+	Registro(arreglo, n);
+	if (arreglo[n].entrega.entregado != false)
+		TipoCompra(arreglo, n);
+	Menu(arreglo, n);
+}
+
+void NuevoComprador(Venta* arreglo, int n)
+{
+	char nuevo_comprador;
+	cout << "\n\tContinuar nueva compra?";
+	cout << "\n\t---------------";
+	cout << "\n\t S: Si | N: No \n";
+	cout << "\t---------------";
+	do {
+		cout << "\n\tRespuesta: "; cin >> nuevo_comprador;
+		if (nuevo_comprador == 's' || nuevo_comprador == 'n')
+			nuevo_comprador = toupper(nuevo_comprador);
+		if (nuevo_comprador != 'S' && nuevo_comprador != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...";
+	} while (nuevo_comprador != 'S' && nuevo_comprador != 'N');
+	switch (nuevo_comprador)
+	{
+	case 'S':
+		break;
+	case 'N':
+		Menu(arreglo, n);
+		break;
+	}
+}
+
+void Registro(Venta* arreglo, int n)
+{
+	char tipo_cliente;
+	do {
+		cout << "\t  ¿Eres cliente independiente o representante de una empresa?\n";
+		cout << "\t ------------------------------------------------------------------\n";
+		cout << "\t  O: representante de organizacion de eventos | I: cliente natural\n";
+		cout << "\t ------------------------------------------------------------------";
+		cout << "\n\tRespuesta: "; cin >> tipo_cliente;
+		if (tipo_cliente == 'o' || tipo_cliente == 'i')
+			tipo_cliente = toupper(tipo_cliente);
+		switch (tipo_cliente)
+		{
+		case 'O':
+			RegistroEmpresa(n, arreglo);
+			break;
+		case 'I':
+			RegistroIndependiente(n, arreglo);
+			break;
+		default:
+			cout << "\n\tOpción inválida, intente de nuevo...\n";
+			break;
+		}
+	} while (tipo_cliente != 'O' && tipo_cliente != 'I');
+}
+
+void RegistroEmpresa(int n, Venta* arreglo)
+{
+	cout << "\n\tRegistro de cliente" << endl;
+	cout << "\tNombres   : ";
+	cin.ignore();
+	getline(cin, arreglo[n].cliente.nombres);
+	cout << "\tApellidos : ";
+	getline(cin, arreglo[n].cliente.apellidos);
+	do {
+		cout << "\tSexo (M : masculino / F : femenino): "; cin >> arreglo[n].cliente.género;
+		if (arreglo[n].cliente.género == 'm' || arreglo[n].cliente.género == 'f')
+			arreglo[n].cliente.género = toupper(arreglo[n].cliente.género);
+		switch (arreglo[n].cliente.género)
+		{
+		case 'M':
+			break;
+		case 'F':
+			break;
+		default:
+			cout << "\n\tOpción inválida, intente de nuevo...\n";
+			break;
+		}
+	} while (arreglo[n].cliente.género != 'M' && arreglo[n].cliente.género != 'F');
+	cout << "\tDNI       : "; cin >> arreglo[n].cliente.DNI;
+	cout << "\tCorreo    : "; cin >> arreglo[n].cliente.correo;
+	cout << "\n\tDe cual organizacion de eventos vienes?";
+	cout << "\n\n\tOPCIONES";
+	cout << "\n\t--------------------";
+	cout << "\n\t (1) Comic-con Perú";
+	cout << "\n\t (2) Fanatik Fest";
+	cout << "\n\t (3) Otro";
+	cout << "\n\t--------------------\n";
+	do {
+		cout << "\n\tOpcion: #"; cin >> arreglo[n].cliente.representante.organización;
+	} while (arreglo[n].cliente.representante.organización != '1' && arreglo[n].cliente.representante.organización != '2' && arreglo[n].cliente.representante.organización != '3');
+	switch (arreglo[n].cliente.representante.organización)
+	{
+	case '1':
+		arreglo[n].cliente.representante.organización_nombre = "Comic-con Perú";
+		arreglo[n].cliente.representante.correo_organización = "contacto@perucomiccon.com";
+		break;
+	case '2':
+		arreglo[n].cliente.representante.organización_nombre = "Fanatik Fest";
+		arreglo[n].cliente.representante.correo_organización = "contacto@fantikfest.com";
+		break;
+	case '3':
+		cout << "\tEvento             : "; cin >> arreglo[n].cliente.representante.organización_nombre;
+		cout << "\tCorreo de contacto : "; cin >> arreglo[n].cliente.representante.correo_organización;
+		break;
+	}
+	for (int i = 0; i < 50; i++)
+		if (arreglo[n].cliente.nombres == arreglo[i].cliente.nombres)
+			if (arreglo[n].cliente.apellidos == arreglo[i].cliente.apellidos)
+				if (arreglo[n].cliente.DNI == arreglo[i].cliente.DNI)
+					if (arreglo[i].entrega.entregado == false)
+					{
+						cout << "\n\tLo siento, no puedes comprar otro libro antes de recoger el que ya tienes";
+						RealizarEntrega(arreglo, i);
+						if (arreglo[i].entrega.entregado == true)
+							cout << "\n\n\t     ¡Gracias!\n\tProcederemos a realizar tu nueva compra";
+					}
+}
+
+void RegistroIndependiente(int n, Venta* arreglo)
+{
+	cout << "\n\tRegistro de cliente" << endl;
+	cout << "\tNombres  : ";
+	cin.ignore();
+	getline(cin, arreglo[n].cliente.nombres);
+	cout << "\tApellidos: ";
+	getline(cin, arreglo[n].cliente.apellidos);
+	cout << "\tSelecciona tu genero";
+	cout << "\n\t------------------------------";
+	cout << "\n\t M : masculino | F : femenino ";
+	cout << "\n\t------------------------------\n";
+	do {
+		cout << "\n\tRespuesta: "; cin >> arreglo[n].cliente.género;
+		if (arreglo[n].cliente.género == 'm' || arreglo[n].cliente.género == 'f')
+			arreglo[n].cliente.género = toupper(arreglo[n].cliente.género);
+		switch (arreglo[n].cliente.género)
+		{
+		case 'M':
+			break;
+		case 'F':
+			break;
+		default:
+			cout << "\n\tOpción inválida, intente de nuevo...\n";
+			break;
+		}
+	} while (arreglo[n].cliente.género != 'M' && arreglo[n].cliente.género != 'F');
+	cout << "\tDNI: "; cin >> arreglo[n].cliente.DNI;
+	cout << "\tCorreo: "; cin >> arreglo[n].cliente.correo;
+	for (int i = 0; i < 50; i++)
+		if (arreglo[n].cliente.nombres == arreglo[i].cliente.nombres)
+			if (arreglo[n].cliente.apellidos == arreglo[i].cliente.apellidos)
+				if (arreglo[n].cliente.DNI == arreglo[i].cliente.DNI)
+					if (arreglo[i].entrega.entregado == false)
+					{
+						cout << "\n\tLo siento, no puedes comprar otro libro antes de recoger el que ya tienes";
+						RealizarEntrega(arreglo, i);
+					}
+}
+
+void TipoCompra(Venta* arreglo, int n)
+{
+	cout << "\n\n\tFORMA DE COMPRA DESEADA\n";
+	cout << "\t---------------------------------------------------";
+	cout << "\n\t A: compra por aplicación | W: compra por WhatsApp";
+	cout << "\n\t---------------------------------------------------";
+	do {
+		cout << "\n\tRespuesta: "; cin >> arreglo[n].compra.tipo_compra;
+		if (arreglo[n].compra.tipo_compra == 'a' || arreglo[n].compra.tipo_compra == 'w')
+			arreglo[n].compra.tipo_compra = toupper(arreglo[n].compra.tipo_compra);
+		switch (arreglo[n].compra.tipo_compra)
+		{
+		case 'A':
+			CompraApp(arreglo, n);
+			break;
+		case 'W':
+			CompraWhatsApp(arreglo, n);
+			break;
+		default:
+			cout << "\nOpción inválida, intente de nuevo...\n";
+			break;
+		}
+	} while (arreglo[n].compra.tipo_compra != 'A' && arreglo[n].compra.tipo_compra != 'W');
+}
+
+void CompraApp(Venta* arreglo, int n)
+{
+	int stockcomic1 = 2, stockcomic2 = 4, stockcomic3 = 3, stockcomic4 = 2, stockcomic5 = 1;
+	int stockmanga1 = 1, stockmanga2 = 5, stockmanga3 = 5, stockmanga4 = 1, stockmanga5 = 4;
+	for (int i = 0; i < 50; i++)
+	{
+		if (arreglo[i].compra.tipo_compra == 'A')
+		{
+			if (arreglo[i].compra.App.catálogo == 'C')
+			{
+				if (arreglo[i].compra.App.opción == '1' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic1--;
+				else if (arreglo[i].compra.App.opción == '2' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic2--;
+				else if (arreglo[i].compra.App.opción == '3' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic3--;
+				else if (arreglo[i].compra.App.opción == '4' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic4--;
+				else if (arreglo[i].compra.App.opción == '5' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic5--;
+			}
+			else if (arreglo[i].compra.App.catálogo == 'M')
+			{
+				if (arreglo[i].compra.App.opción == '1' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga1--;
+				else if (arreglo[i].compra.App.opción == '2' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga2--;
+				else if (arreglo[i].compra.App.opción == '3' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga3--;
+				else if (arreglo[i].compra.App.opción == '4' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga4--;
+				else if (arreglo[i].compra.App.opción == '5' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga5--;
+			}
+		}
+		else if (arreglo[i].compra.tipo_compra == 'W')
+		{
+			if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '0' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic1--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '1' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic2--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '2' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic3--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '3' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic4--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '4' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic5--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '5' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga1--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '6' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga2--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '7' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga3--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '8' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga4--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '9' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga5--;
+		}
+	}
+	srand(time(0));
+	int codigo_comic1, codigo_comic2, codigo_comic3, codigo_comic4, codigo_comic5;
+	int codigo_manga1, codigo_manga2, codigo_manga3, codigo_manga4, codigo_manga5;
+
+	codigo_comic1 = 0 + rand() % (99 + 1 - 0);
+	codigo_comic2 = 100 + rand() % (199 + 1 - 100);
+	codigo_comic3 = 200 + rand() % (299 + 1 - 200);
+	codigo_comic4 = 300 + rand() % (399 + 1 - 300);
+	codigo_comic5 = 400 + rand() % (499 + 1 - 400);
+	codigo_manga1 = 500 + rand() % (599 + 1 - 500);
+	codigo_manga2 = 600 + rand() % (699 + 1 - 600);
+	codigo_manga3 = 700 + rand() % (799 + 1 - 700);
+	codigo_manga4 = 800 + rand() % (899 + 1 - 800);
+	codigo_manga5 = 900 + rand() % (999 + 1 - 900);
+	char catalogo, opcion_salir;
+	do {
+		cout << "\n\tElegir catalogo (C: comics  / M: mangas): "; cin >> arreglo[n].compra.App.catálogo;
+		if (arreglo[n].compra.App.catálogo == 'c' || arreglo[n].compra.App.catálogo == 'm')
+			arreglo[n].compra.App.catálogo = toupper(arreglo[n].compra.App.catálogo);
+		switch (arreglo[n].compra.App.catálogo)
+		{
+		case 'C':
+			CatálogoComics(codigo_comic1, codigo_comic2, codigo_comic3, codigo_comic4, codigo_comic5, stockcomic1, stockcomic2, stockcomic3, stockcomic4, stockcomic5);
+			break;
+		case 'M':
+			CatálogoMangas(codigo_manga1, codigo_manga2, codigo_manga3, codigo_manga4, codigo_manga5, stockmanga1, stockmanga2, stockmanga3, stockmanga4, stockmanga5);
+			break;
+		default:
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			break;
+		}
+	} while (arreglo[n].compra.App.catálogo != 'C' && arreglo[n].compra.App.catálogo != 'M');
+	do {
+		cout << "\n\n\tDesea elegir un libro del presente catalogo?\n";
+		cout << "\t(S: si / N: no): "; cin >> catalogo;
+		if (catalogo == 's' || catalogo == 'n')
+			catalogo = toupper(catalogo);
+		if (catalogo != 'S' && catalogo != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+	} while (catalogo != 'S' && catalogo != 'N');
+	switch (catalogo)
+	{
+	case 'S':
+		ElegirLibro(arreglo, n, codigo_comic1, codigo_comic2, codigo_comic3, codigo_comic4, codigo_comic5, codigo_manga1, codigo_manga2, codigo_manga3, codigo_manga4, codigo_manga5, stockcomic1, stockcomic2, stockcomic3, stockcomic4, stockcomic5, stockmanga1, stockmanga2, stockmanga3, stockmanga4, stockmanga5);
+		break;
+	case 'N':
+		catalogo = 'm';
+		do {
+			cout << "\n\tDesea volver a elegir el catálogo?\n";
+			cout << "\t(S: si / N: no): "; cin >> catalogo;
+			if (catalogo == 's' || catalogo == 'n')
+				catalogo = toupper(catalogo);
+			if (catalogo != 'S' && catalogo != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...\n";
+		} while (catalogo != 'S' && catalogo != 'N');
+		switch (catalogo)
+		{
+		case 'S':
+			CompraApp(arreglo, n);
+			break;
+		case 'N':
+			do {
+				cout << "\n\tSalir?\n";
+				cout << "(S: si / N: no): "; cin >> opcion_salir;
+				if (opcion_salir == 's' || opcion_salir == 'n')
+					opcion_salir = toupper(opcion_salir);
+				if (opcion_salir != 'S' && opcion_salir != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (opcion_salir != 'S' && opcion_salir != 'N');
+			switch (opcion_salir)
+			{
+			case 'S':
+				Menu(arreglo, n);
+				break;
+			case 'N':
+				CompraApp(arreglo, n);
+				break;
+			}
+			break;
+		}
+		break;
+	}
+	//Confirmacion de compra
+	char confirmacion_datoslibro;
+	do {
+		cout << "\n\tDatos correctos?\n";
+		cout << "\t(S: si / N: no): "; cin >> confirmacion_datoslibro;
+		if (confirmacion_datoslibro == 's' || confirmacion_datoslibro == 'n')
+			confirmacion_datoslibro = toupper(confirmacion_datoslibro);
+		if (confirmacion_datoslibro != 'S' && confirmacion_datoslibro != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+	} while (confirmacion_datoslibro != 'S' && confirmacion_datoslibro != 'N');
+	char reiniciar_compra;
+	switch (confirmacion_datoslibro)
+	{
+	case 'S':
+		Pago(arreglo, n);
+		break;
+	case 'N':
+		do {
+			cout << "\n\tReiniciar compra?\n";
+			cout << "\t(S: si / N: no): "; cin >> reiniciar_compra;
+			if (reiniciar_compra == 's' || reiniciar_compra == 'n')
+				reiniciar_compra = toupper(reiniciar_compra);
+			if (reiniciar_compra != 'S' && reiniciar_compra != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...\n";
+		} while (reiniciar_compra != 'S' && reiniciar_compra != 'N');
+		switch (reiniciar_compra)
+		{
+		case 'S':
+			cout << "\n\tRedirigiendo a compra...\n";
+			TipoCompra(arreglo, n);
+			break;
+		case 'N':
+			do {
+				cout << "\n\tSalir?\n";
+				cout << "\t(S: si / N: no): "; cin >> opcion_salir;
+				if (opcion_salir == 's' || opcion_salir == 'n')
+					opcion_salir = toupper(opcion_salir);
+				if (opcion_salir != 'S' && opcion_salir != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (opcion_salir != 'S' && opcion_salir != 'N');
+			switch (opcion_salir)
+			{
+			case 'S':
+				Menu(arreglo, n);
+				break;
+			case 'N':
+				cout << "\n\tProcediendo a compra...\n";
+				CompraApp(arreglo, n);
+				break;
+			}
+			break;
+		}
+		break;
+	}
+	//Confirmacion de pago
+	char confirmar_pago;
+	do {
+		cout << "\n\tConfirmar pago?" << "\n\t(S: si / N: no): "; cin >> confirmar_pago;
+		if (confirmar_pago == 's' || confirmar_pago == 'n')
+			confirmar_pago = toupper(confirmar_pago);
+		if (confirmar_pago != 'S' && confirmar_pago != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+	} while (confirmar_pago != 'S' && confirmar_pago != 'N');
+	switch (confirmar_pago)
+	{
+	case 'S':
+		arreglo[n].compra.App.compra_finalizada = true;
+		Boleta(arreglo, n);
+		RealizarEntrega(arreglo, n);
+		break;
+	case 'N':
+		do {
+			cout << "\n\tReiniciar compra?\n";
+			cout << "(S: si / N: no): "; cin >> reiniciar_compra;
+			if (reiniciar_compra == 's' || reiniciar_compra == 'n')
+				reiniciar_compra = toupper(reiniciar_compra);
+			if (reiniciar_compra != 'S' && reiniciar_compra != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...\n";
+		} while (reiniciar_compra != 'S' && reiniciar_compra != 'N');
+		switch (reiniciar_compra)
+		{
+		case 'S':
+			cout << "\n\tReiniciando a compra...\n";
+			TipoCompra(arreglo, n);
+			break;
+		case 'N':
+			do {
+				cout << "\n\tSalir?\n";
+				cout << "(S: si / N: no): "; cin >> opcion_salir;
+				if (opcion_salir == 's' || opcion_salir == 'n')
+					opcion_salir = toupper(opcion_salir);
+				if (opcion_salir != 'S' && opcion_salir != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (opcion_salir != 'S' && opcion_salir != 'N');
+			switch (opcion_salir)
+			{
+			case 'S':
+				Menu(arreglo, n);
+				break;
+			case 'N':
+				cout << "\n\tReiniciando compra...\n";
+				TipoCompra(arreglo, n);
+				break;
+			}
+			break;
+		}
+		break;
+	}
+
+}
+
+void CatálogoComics(int c1, int c2, int c3, int c4, int c5, int s1, int s2, int s3, int s4, int s5)
+{
+
+	cout << endl << "\t=======================================================================================================";
+	cout << endl << "\t                                        CATALOGO DE ATLAS";
+	cout << endl << "\t-------------------------------------------------------------------------------------------------------";
+	cout << endl << "\t            COMIC                      |        AUTOR                 |   PRECIO   |  UNIDAD  |  STOCK";
+	cout << endl << "\t-------------------------------------- | ---------------------------- | ---------- | -------- | ------- ";
+	if (s1 != 0)
+		cout << endl << "\t(1) 'X-Men: Dias del futuro pasado'    | Chris Claremont & John Byrne |  S/109.64  |   #0";
+	if (c1 >= 10)
+		cout << c1 << "   |   " << s1;
+	else
+		cout << "0" << c1 << "   |   " << s1;
+	if (s2 != 0)
+		cout << endl << "\t(2) 'Batman: Primer Año'               | Frank Miller                 |  S/119.30  |   #" << c2 << "   |   " << s2;
+	if (s3 != 0)
+		cout << endl << "\t(3) 'Batman: La broma mortal'          | Alan Moore                   |  S/129.65  |   #" << c3 << "   |   " << s3;
+	if (s4 != 0)
+		cout << endl << "\t(4) 'The Boys Integral 3'              | Garth Ennis                  |  S/159.50  |   #" << c4 << "   |   " << s4;
+	if (s5 != 0)
+		cout << endl << "\t(5) 'Watchmen Vol. 1'                  | Alan Moore & Dave Gibbons    |  S/132.96  |   #" << c5 << "   |   " << s5;
+	cout << endl << "\t=======================================================================================================";
+}
+
+void CatálogoMangas(int c1, int c2, int c3, int c4, int c5, int s1, int s2, int s3, int s4, int s5)
+{
+	cout << endl << "\t==================================================================================";
+	cout << endl << "\t                                   CATALOGO DE ATLAS";
+	cout << endl << "\t----------------------------------------------------------------------------------";
+	cout << endl << "\t             MANGA         |        AUTOR       |   PRECIO   |  UNIDAD  |  STOCK";
+	cout << endl << "\t-------------------------- | ------------------ | ---------- | -------- | ------- ";
+	if (s1 != 0)
+		cout << endl << "\t(1) 'Tokyo Ghoul'          | Sui ishida         |   S/45.70  |  #" << c1 << "   |   " << s1;
+	if (s2 != 0)
+		cout << endl << "\t(2) 'Death Note'           | Tsugumi Ōba        |   S/70.20  |  #" << c2 << "   |   " << s2;
+	if (s3 != 0)
+		cout << endl << "\t(3) 'Deadman Wonderland'   | Jinsei Kataoka     |   S/30.80  |  #" << c3 << "   |   " << s3;
+	if (s4 != 0)
+		cout << endl << "\t(4) 'Berserk'              | Kentaro Miura      |   S/62.45  |  #" << c4 << "   |   " << s4;
+	if (s5 != 0)
+		cout << endl << "\t(5) 'Hunter x hunter'      | Yoshihiro Togasi   |   S/58.80  |  #" << c5 << "   |   " << s5;
+	cout << endl << "\t==================================================================================";
+}
+
+void ElegirLibro(Venta* arreglo, int n, int comic1, int comic2, int comic3, int comic4, int comic5, int manga1, int manga2, int manga3, int manga4, int manga5, int s1, int s2, int s3, int s4, int s5, int s6, int s7, int s8, int s9, int s10)
+{
+	bool stock1 = true, stock2 = true, stock3 = true, stock4 = true, stock5 = true, stock6 = true, stock7 = true, stock8 = true, stock9 = true, stock10 = true, en_stock = true;
+	if (s1 == 0)
+		stock1 = false;
+	if (s2 == 0)
+		stock2 = false;
+	if (s3 == 0)
+		stock3 = false;
+	if (s4 == 0)
+		stock4 = false;
+	if (s5 == 0)
+		stock5 = false;
+	if (s6 == 0)
+		stock6 = false;
+	if (s7 == 0)
+		stock7 = false;
+	if (s8 == 0)
+		stock8 = false;
+	if (s9 == 0)
+		stock9 = false;
+	if (s10 == 0)
+		stock10 = false;
+	do {
+		cout << "\n\tLibro #"; cin >> arreglo[n].compra.App.opción;
+		if (arreglo[n].compra.App.opción != '1' && arreglo[n].compra.App.opción != '2' && arreglo[n].compra.App.opción != '3' && arreglo[n].compra.App.opción != '4' && arreglo[n].compra.App.opción != '5')
+			cout << "\n\tOpción inválida, intente de nuevo...\n";
+	} while (arreglo[n].compra.App.opción != '1' && arreglo[n].compra.App.opción != '2' && arreglo[n].compra.App.opción != '3' && arreglo[n].compra.App.opción != '4' && arreglo[n].compra.App.opción != '5');
+
+	switch (arreglo[n].compra.App.catálogo)
+	{
+	case 'C':
+		if (arreglo[n].compra.App.opción == '1' && stock1 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.App.opción == '2' && stock2 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.App.opción == '3' && stock3 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.App.opción == '4' && stock4 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.App.opción == '5' && stock5 == false)
+			en_stock = false;
+		break;
+	case 'M':
+		if (arreglo[n].compra.App.opción == '1' && stock6 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.App.opción == '2' && stock7 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.App.opción == '3' && stock8 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.App.opción == '4' && stock9 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.App.opción == '5' && stock10 == false)
+			en_stock = false;
+		break;
+	}
+	if (en_stock == false)
+	{
+		cout << "\n\tOpcion invalida";
+		cout << "\n\tIntenta de nuevo";
+		ElegirLibro(arreglo, n, comic1, comic2, comic3, comic4, comic5, manga1, manga2, manga3, manga4, manga5, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10);
+	}
+	else if (en_stock == true)
+	{
+		switch (arreglo[n].compra.App.catálogo)
+		{
+		case 'C':
+			switch (arreglo[n].compra.App.opción)
+			{
+			case '1':
+				arreglo[n].compra.App.datos_libro.precio = 109.64;
+				arreglo[n].compra.App.datos_libro.nombre = "'X-men: Días del futuro pasado'";
+				arreglo[n].compra.App.datos_libro.codigo = comic1;
+				break;
+			case '2':
+				arreglo[n].compra.App.datos_libro.precio = 119.30;
+				arreglo[n].compra.App.datos_libro.nombre = "'Batman: Primer Año'";
+				arreglo[n].compra.App.datos_libro.codigo = comic2;
+				break;
+			case '3':
+				arreglo[n].compra.App.datos_libro.precio = 129.65;
+				arreglo[n].compra.App.datos_libro.nombre = "'Batman: La broma mortal'";
+				arreglo[n].compra.App.datos_libro.codigo = comic3;
+				break;
+			case '4':
+				arreglo[n].compra.App.datos_libro.precio = 159.50;
+				arreglo[n].compra.App.datos_libro.nombre = "'The Boys Integral 3'";
+				arreglo[n].compra.App.datos_libro.codigo = comic4;
+				break;
+			case '5':
+				arreglo[n].compra.App.datos_libro.precio = 132.96;
+				arreglo[n].compra.App.datos_libro.nombre = "'Watchmen Vol.1'";
+				arreglo[n].compra.App.datos_libro.codigo = comic5;
+				break;
+			default:
+				cout << "\nOpción inválida, intente de nuevo...\n";
+				break;
+			}
+			break;
+		case 'M':
+			switch (arreglo[n].compra.App.opción)
+			{
+			case '1':
+				arreglo[n].compra.App.datos_libro.precio = 45.70;
+				arreglo[n].compra.App.datos_libro.nombre = "'Tokyo Ghoul'";
+				arreglo[n].compra.App.datos_libro.codigo = manga1;
+				break;
+			case '2':
+				arreglo[n].compra.App.datos_libro.precio = 70.20;
+				arreglo[n].compra.App.datos_libro.nombre = "'Death Note'";
+				arreglo[n].compra.App.datos_libro.codigo = manga2;
+				break;
+			case '3':
+				arreglo[n].compra.App.datos_libro.precio = 30.80;
+				arreglo[n].compra.App.datos_libro.nombre = "'Deadman Wonderland'";
+				arreglo[n].compra.App.datos_libro.codigo = manga3;
+				break;
+			case '4':
+				arreglo[n].compra.App.datos_libro.precio = 62.45;
+				arreglo[n].compra.App.datos_libro.nombre = "'Berserk'";
+				arreglo[n].compra.App.datos_libro.codigo = manga4;
+				break;
+			case '5':
+				arreglo[n].compra.App.datos_libro.precio = 58.80;
+				arreglo[n].compra.App.datos_libro.nombre = "'Hunter x hunter'";
+				arreglo[n].compra.App.datos_libro.codigo = manga5;
+				break;
+			}
+			break;
+		}
+		cout << "\n\t---------------------------------" << endl;
+		cout << "\t DATOS DEL PRODUCTO SELECCIONADO\n";
+		cout << "\t---------------------------------" << endl;
+		cout << "\tLibro elegido   : " << arreglo[n].compra.App.datos_libro.nombre;
+		cout << "\n\tCosto           : S/" << arreglo[n].compra.App.datos_libro.precio;
+		cout << "\n\tUnidad de libro : #";
+		if (arreglo[n].compra.App.datos_libro.codigo == comic1)
+		{
+			cout << "0";
+			if (comic1 <= 9)
+				cout << comic1 << "0" << arreglo[n].compra.App.datos_libro.codigo;
+			else
+				cout << arreglo[n].compra.App.datos_libro.codigo;
+		}
+		else
+			cout << arreglo[n].compra.App.datos_libro.codigo;
+		cout << "\n\t---------------------------------\n";
+	}
+}
+
+void Pago(Venta* arreglo, int n)
+{
+	cout << "\n\tMETODO DE PAGO\n";
+	cout << "\t--------------------";
+	cout << "\n\t P: Plin | Y : Yape ";
+	cout << "\n\t--------------------";
+	do {
+		cout << "\n\tOpción: "; cin >> arreglo[n].compra.App.datos_pago.plataforma;
+		if (arreglo[n].compra.App.datos_pago.plataforma == 'p' || arreglo[n].compra.App.datos_pago.plataforma == 'y')
+			arreglo[n].compra.App.datos_pago.plataforma = toupper(arreglo[n].compra.App.datos_pago.plataforma);
+		switch (arreglo[n].compra.App.datos_pago.plataforma)
+		{
+		case 'Y':
+			arreglo[n].compra.App.datos_pago.metodo_pago = "Yape";
+			break;
+		case 'P':
+			arreglo[n].compra.App.datos_pago.metodo_pago = "Plin";
+			break;
+		default:
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			break;
+		}
+	} while (arreglo[n].compra.App.datos_pago.plataforma != 'Y' && arreglo[n].compra.App.datos_pago.plataforma != 'P');
+
+	do {
+		cout << "\n\tDigitar ultimos 6 digitos de la tarjeta: "; cin >> arreglo[n].compra.App.datos_pago.tarjeta;
+		if (arreglo[n].compra.App.datos_pago.tarjeta < 10000 || arreglo[n].compra.App.datos_pago.tarjeta > 999999)
+			cout << "\n\tOpcion invalida, intente de nuevo...";
+	} while (arreglo[n].compra.App.datos_pago.tarjeta < 10000 || arreglo[n].compra.App.datos_pago.tarjeta > 999999);
+	do {
+		cout << "\tDigitar codigo: "; cin >> arreglo[n].compra.App.datos_pago.cvv;
+		if (arreglo[n].compra.App.datos_pago.cvv < 1000 || arreglo[n].compra.App.datos_pago.cvv > 9999)
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+	} while (arreglo[n].compra.App.datos_pago.cvv < 1000 || arreglo[n].compra.App.datos_pago.cvv > 9999);
+
+	cout << "\n\t DATOS DEL PRODUCTO SELECCIONADO" << endl;
+	cout << "\t---------------------------------" << endl;
+	cout << "\tNombre_de_libro    : " << arreglo[n].compra.App.datos_libro.nombre << endl;
+	cout << "\tCosto inicial      : " << arreglo[n].compra.App.datos_libro.precio << endl;
+	cout << "\tIGV                : 18%" << endl;
+	cout << "\tImporte por IGV    : S/" << arreglo[n].compra.App.datos_libro.precio * 0.18 << endl;
+	cout << "\tCosto total        : S/" << arreglo[n].compra.App.datos_libro.precio * 1.18 << endl;
+	cout << "\tPlataforma de pago : " << arreglo[n].compra.App.datos_pago.metodo_pago << endl;
+	cout << "\tNumero_de_tarjeta  : " << "XXXX XXXX " << (arreglo[n].compra.App.datos_pago.tarjeta % 10000) << endl;
+	cout << "\t---------------------------------\n";
+}
+
+void CompraWhatsApp(Venta* arreglo, int n)
+{
+	for (int i = 0; i < 50; i++)
+		if (arreglo[n].cliente.nombres == arreglo[i].cliente.nombres)
+			if (arreglo[n].cliente.apellidos == arreglo[i].cliente.apellidos)
+				if (arreglo[n].cliente.DNI == arreglo[i].cliente.DNI)
+					if (arreglo[n].cliente.género == arreglo[i].cliente.género)
+						if (arreglo[i].compra.WhatsApp.codigo_verificado == false)
+						{
+							cout << "\n\tLo sentimos, tus intentos han sido todos usados";
+							cout << "\n\tIntenta de nuevo mañana\n\n\n";
+							Menu(arreglo, n);
+						}
+
+	cout << "\n\tMetodo de pago de la compra\n";
+	cout << "\t--------------------\n";
+	cout << "\t P: Plin | Y : Yape";
+	cout << "\n\t--------------------\n";
+	do {
+		cout << "\n\tOpción: "; cin >> arreglo[n].compra.App.datos_pago.plataforma;
+		if (arreglo[n].compra.App.datos_pago.plataforma == 'p' || arreglo[n].compra.App.datos_pago.plataforma == 'y')
+			arreglo[n].compra.App.datos_pago.plataforma = toupper(arreglo[n].compra.App.datos_pago.plataforma);
+		switch (arreglo[n].compra.App.datos_pago.plataforma)
+		{
+		case 'Y':
+			arreglo[n].compra.App.datos_pago.metodo_pago = "Yape";
+			break;
+		case 'P':
+			arreglo[n].compra.App.datos_pago.metodo_pago = "Plin";
+			break;
+		default:
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			break;
+		}
+	} while (arreglo[n].compra.App.datos_pago.plataforma != 'Y' && arreglo[n].compra.App.datos_pago.plataforma != 'P');
+	cout << "\n\tCODIGO DE LIBRO";
+	cout << "\n\tIngresa el codigo brindado despues de la compra por favor\n";
+	char nuevo_intento, opcion_salir;
+	int stockcomic1 = 2, stockcomic2 = 4, stockcomic3 = 3, stockcomic4 = 2, stockcomic5 = 1;
+	int stockmanga1 = 1, stockmanga2 = 5, stockmanga3 = 5, stockmanga4 = 1, stockmanga5 = 4;
+	for (int i = 3; i != 0; i--)
+	{
+		cout << "\n\t(Te quedan " << i << " intentos)";
+		cout << "\n\tCodigo: "; 
+		cin.ignore();
+		getline(cin,arreglo[n].compra.WhatsApp.codigo_maestro);
+		CodigoMaestro(arreglo, n);
+		if (arreglo[n].compra.WhatsApp.codigo_verificado == true)
+			break;
+		else if (arreglo[n].compra.WhatsApp.codigo_verificado == false)
+		{
+			cout << "\n\tLo sentimos...";
+			cout << "\n\tTu código no es válido";
+			cout << "\n\tIntentar de nuevo?";
+			cout << "\n\t---------------";
+			cout << "\n\t S: Si | N: No ";
+			cout << "\n\t---------------";
+			do {
+				cout << "\n\tRespuesta: "; cin >> nuevo_intento;
+				if (nuevo_intento == 's' || nuevo_intento == 'n')
+					nuevo_intento = toupper(nuevo_intento);
+				switch (nuevo_intento)
+				{
+				case 'S':
+					break;
+				case 'N':
+					cout << "\n\tSalir?\n";
+					cout << "\n\t---------------";
+					cout << "\n\t S: Si | N: No ";
+					cout << "\n\t---------------";
+					do {
+
+						cout << "\n\tRespuesta: "; cin >> opcion_salir;
+						if (opcion_salir == 's' || opcion_salir == 'n')
+							opcion_salir = toupper(opcion_salir);
+					} while (opcion_salir != 'S' && opcion_salir != 'N');
+					switch (opcion_salir)
+					{
+					case 'S':
+						i = 0;
+						Menu(arreglo, n);
+						break;
+					case 'N':
+						i = 0;
+						TipoCompra(arreglo, n);
+						break;
+					}
+					break;
+				default:
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+					break;
+				}
+			} while (nuevo_intento != 'S' && nuevo_intento != 'N');
+		}
+	}
+	for (int i = 0; i < 50; i++)
+	{
+		if (arreglo[i].compra.tipo_compra == 'A')
+		{
+			if (arreglo[i].compra.App.catálogo == 'C')
+			{
+				if (arreglo[i].compra.App.opción == '1' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic1--;
+				else if (arreglo[i].compra.App.opción == '2' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic2--;
+				else if (arreglo[i].compra.App.opción == '3' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic3--;
+				else if (arreglo[i].compra.App.opción == '4' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic4--;
+				else if (arreglo[i].compra.App.opción == '5' && arreglo[i].compra.App.compra_finalizada == true)
+					stockcomic5--;
+			}
+			else if (arreglo[i].compra.App.catálogo == 'M')
+			{
+				if (arreglo[i].compra.App.opción == '1' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga1--;
+				else if (arreglo[i].compra.App.opción == '2' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga2--;
+				else if (arreglo[i].compra.App.opción == '3' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga3--;
+				else if (arreglo[i].compra.App.opción == '4' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga4--;
+				else if (arreglo[i].compra.App.opción == '5' && arreglo[i].compra.App.compra_finalizada == true)
+					stockmanga5--;
+			}
+		}
+		else if (arreglo[i].compra.tipo_compra == 'W')
+		{
+			if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '0' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic1--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '1' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic2--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '2' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic3--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '3' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic4--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '4' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockcomic5--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '5' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga1--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '6' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga2--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '7' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga3--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '8' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga4--;
+			else if (arreglo[i].compra.WhatsApp.codigo_maestro[1] == '9' && arreglo[i].compra.WhatsApp.compra_finalizada == true)
+				stockmanga5--;
+		}
+	}
+	bool stock1 = true, stock2 = true, stock3 = true, stock4 = true, stock5 = true, stock6 = true, stock7 = true, stock8 = true, stock9 = true, stock10 = true, en_stock = true;
+
+	if (arreglo[n].compra.WhatsApp.codigo_verificado == false)
+	{
+		cout << "\n\tLo sentimos, tus intentos han sido todos usados";
+		cout << "\n\tIntenta de nuevo mañana\n\n\n";
+		arreglo[n].compra.WhatsApp.registro_libro = false;
+	}
+	else if (arreglo[n].compra.WhatsApp.codigo_verificado == true)
+	{
+		if (stockcomic1 == 0)
+			stock1 = false;
+		if (stockcomic2 == 0)
+			stock2 = false;
+		if (stockcomic3 == 0)
+			stock3 = false;
+		if (stockcomic4 == 0)
+			stock4 = false;
+		if (stockcomic5 == 0)
+			stock5 = false;
+		if (stockmanga1 == 0)
+			stock6 = false;
+		if (stockmanga2 == 0)
+			stock7 = false;
+		if (stockmanga3 == 0)
+			stock8 = false;
+		if (stockmanga4 == 0)
+			stock9 = false;
+		if (stockmanga5 == 0)
+			stock10 = false;
+
+		if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '0' && stock1 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '1' && stock2 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '2' && stock3 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '3' && stock4 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '4' && stock5 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '5' && stock5 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '6' && stock5 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '7' && stock5 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '8' && stock5 == false)
+			en_stock = false;
+		else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '9' && stock5 == false)
+			en_stock = false;
+
+		if (en_stock == true)
+		{
+			if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '0')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 109.64;
+				arreglo[n].compra.App.datos_libro.nombre = "'X-men: Días del futuro pasado'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '1')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 119.30;
+				arreglo[n].compra.App.datos_libro.nombre = "'Batman: Primer Año'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '2')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 129.65;
+				arreglo[n].compra.App.datos_libro.nombre = "'Batman: La broma mortal'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '3')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 159.50;
+				arreglo[n].compra.App.datos_libro.nombre = "'The Boys Integral 3'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '4')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 132.96;
+				arreglo[n].compra.App.datos_libro.nombre = "'Watchmen Vol.1'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '5')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 45.70;
+				arreglo[n].compra.App.datos_libro.nombre = "'Tokyo Ghoul'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '6')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 70.20;
+				arreglo[n].compra.App.datos_libro.nombre = "'Death Note'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '7')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 30.80;
+				arreglo[n].compra.App.datos_libro.nombre = "'Deadman Wonderland'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '8')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 62.45;
+				arreglo[n].compra.App.datos_libro.nombre = "'Berserk'";
+			}
+			else if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == '5')
+			{
+				arreglo[n].compra.App.datos_libro.precio = 58.80;
+				arreglo[n].compra.App.datos_libro.nombre = "'Hunter x hunter'";
+			}
+
+			cout << "\n\t---------------------------------" << endl;
+			cout << "\t DATOS DEL PRODUCTO SELECCIONADO\n";
+			cout << "\t---------------------------------" << endl;
+			cout << "\tLibro elegido     : " << arreglo[n].compra.App.datos_libro.nombre;
+			cout << "\n\tCosto           : S/" << arreglo[n].compra.App.datos_libro.precio;
+			cout << "\n\tUnidad de libro : #" << arreglo[n].compra.WhatsApp.codigo_maestro[1] << arreglo[n].compra.WhatsApp.codigo_maestro[2] << arreglo[n].compra.WhatsApp.codigo_maestro[3];
+			cout << "\n\t---------------------------------\n";
+			char confirmacion_datoslibro;
+			do {
+				cout << "\n\tDatos correctos?\n";
+				cout << "\t(S: si / N: no): "; cin >> confirmacion_datoslibro;
+				if (confirmacion_datoslibro == 's' || confirmacion_datoslibro == 'n')
+					confirmacion_datoslibro = toupper(confirmacion_datoslibro);
+				if (confirmacion_datoslibro != 'S' && confirmacion_datoslibro != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (confirmacion_datoslibro != 'S' && confirmacion_datoslibro != 'N');
+			char reiniciar_compra;
+			switch (confirmacion_datoslibro)
+			{
+			case 'S':
+				arreglo[n].compra.WhatsApp.compra_finalizada = true;
+				Boleta(arreglo, n);
+				RealizarEntrega(arreglo, n);
+				break;
+			case 'N':
+				do {
+					cout << "\n\tReiniciar compra?\n";
+					cout << "\t(S: si / N: no): "; cin >> reiniciar_compra;
+					if (reiniciar_compra == 's' || reiniciar_compra == 'n')
+						reiniciar_compra = toupper(reiniciar_compra);
+					if (reiniciar_compra != 'S' && reiniciar_compra != 'N')
+						cout << "\n\tOpcion invalida, intente de nuevo...\n";
+				} while (reiniciar_compra != 'S' && reiniciar_compra != 'N');
+				switch (reiniciar_compra)
+				{
+				case 'S':
+					cout << "\n\tRedirigiendo a compra...\n";
+					ProcesarCompra(arreglo, n);
+					break;
+				case 'N':
+					do {
+						cout << "\n\tSalir?\n";
+						cout << "\t(S: si / N: no): "; cin >> opcion_salir;
+						if (opcion_salir == 's' || opcion_salir == 'n')
+							opcion_salir = toupper(opcion_salir);
+						if (opcion_salir != 'S' && opcion_salir != 'N')
+							cout << "\n\tOpcion invalida, intente de nuevo...\n";
+					} while (opcion_salir != 'S' && opcion_salir != 'N');
+					switch (opcion_salir)
+					{
+					case 'S':
+						Menu(arreglo, n);
+						break;
+					case 'N':
+						cout << "\n\tRedirigiendo a tipos de compra...\n";
+						TipoCompra(arreglo, n);
+						break;
+					}
+					break;
+				}
+				break;
+			}
+		}
+		else if (en_stock == false)
+		{
+			cout << "\n\n\t           Lo sentimos...";
+			cout << "\n\t El libro que compraste está fuera de stock";
+			cout << "\n\t       (Tu compra está intacta)";
+			cout << "\n\t          ¡Vuelve otro día!\n";
+		}
+	}
+}
+
+void CodigoMaestro(Venta* arreglo, int n)
+{
+	bool numero1 = false, numero2 = false, numero3 = false;
+	string Numeros = "0123456789";
+	if (arreglo[n].compra.WhatsApp.codigo_maestro[0] == '#')
+	{
+		for (int i = 0; i < 11; i++)
+			if (arreglo[n].compra.WhatsApp.codigo_maestro[1] == Numeros[i])
+			{
+				numero1 = true;
+				break;
+			}
+		for (int i = 0; i < 11; i++)
+			if (arreglo[n].compra.WhatsApp.codigo_maestro[2] == Numeros[i])
+			{
+				numero2 = true;
+				break;
+			}
+		for (int i = 0; i < 11; i++)
+			if (arreglo[n].compra.WhatsApp.codigo_maestro[3] == Numeros[i])
+			{
+				numero3 = true;
+				break;
+			}
+		if (numero1 == true && numero2 == true && numero3 == true)
+		{
+			if (arreglo[n].compra.WhatsApp.codigo_maestro[4] == '*')
+				if (arreglo[n].compra.WhatsApp.codigo_maestro[5] == arreglo[n].cliente.nombres[0] && arreglo[n].compra.WhatsApp.codigo_maestro[6] == arreglo[n].cliente.apellidos[0])
+					if (arreglo[n].compra.WhatsApp.codigo_maestro[7] == '_')
+						if (arreglo[n].compra.WhatsApp.codigo_maestro[8] == arreglo[n].cliente.DNI[5] && arreglo[n].compra.WhatsApp.codigo_maestro[9] == arreglo[n].cliente.DNI[6] && arreglo[n].compra.WhatsApp.codigo_maestro[10] == arreglo[n].cliente.DNI[7])
+							arreglo[n].compra.WhatsApp.codigo_verificado = true;
+		}
+	}
+	else
+		arreglo[n].compra.WhatsApp.codigo_verificado = false;
+
+	if (arreglo[n].compra.WhatsApp.codigo_verificado == true)
+		cout << "\tCodigo registrado con exito!\n\n";
+}
+
+void MetodoEntregaLibro(int n, Venta* arreglo)
+{
+	do {
+		cout << "\n\tDesea realizar la entrega del libro en uno de nuestros locales o por envio?\n";
+		cout << "\t       (L: entrega en local de ATLAS / E: envio a domicilio): "; cin >> arreglo[n].entrega.tipo_entrega;
+		if (arreglo[n].entrega.tipo_entrega == 'l' || arreglo[n].entrega.tipo_entrega == 'e')
+			arreglo[n].entrega.tipo_entrega = toupper(arreglo[n].entrega.tipo_entrega);
+		switch (arreglo[n].entrega.tipo_entrega)
+		{
+		case 'L':
+			EntregaLocal(n, arreglo);
+			break;
+		case 'E':
+			EnvioDomicilio(n, arreglo);
+			break;
+		default:
+			cout << "\nOpción inválida, intente de nuevo...\n";
+			break;
+		}
+	} while (arreglo[n].entrega.tipo_entrega != 'L' && arreglo[n].entrega.tipo_entrega != 'E');
+}
+
+void RealizarEntrega(Venta* arreglo, int n)
+{
+	char realizar_entrega;
+	do {
+		cout << "\n\tRealizar entrega ahora?\n";
+		cout << "\t(S: si / N: no): "; cin >> realizar_entrega;
+		if (realizar_entrega == 's' || realizar_entrega == 'n')
+			realizar_entrega = toupper(realizar_entrega);
+		if (realizar_entrega != 'S' && realizar_entrega != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+	} while (realizar_entrega != 'S' && realizar_entrega != 'N');
+	switch (realizar_entrega)
+	{
+	case 'N':
+		arreglo[n].entrega.entregado = false;
+		break;
+	case 'S':
+		MetodoEntregaLibro(n, arreglo);
+		break;
+	}
+}
+
+void EntregaLocal(int n, Venta* arreglo)
+{
+	char confirmar_entrega, reformular_entrega, opcion_salir;
+	do {
+		cout << "\n\tDesea realizar la entrega del libro en San Isidro o Miraflores?\n";
+		cout << "\t       (S: San Isidro / M: Miraflores): "; cin >> arreglo[n].entrega.recogo_en_tienda.local;
+		if (arreglo[n].entrega.recogo_en_tienda.local == 's' || arreglo[n].entrega.recogo_en_tienda.local == 'm')
+			arreglo[n].entrega.recogo_en_tienda.local = toupper(arreglo[n].entrega.recogo_en_tienda.local);
+		switch (arreglo[n].entrega.recogo_en_tienda.local)
+		{
+		case 'S':
+			arreglo[n].entrega.recogo_en_tienda.distrito = "San Isidro";
+			arreglo[n].entrega.recogo_en_tienda.urbanizacion = "El Olivar";
+			arreglo[n].entrega.recogo_en_tienda.avenida = "Los Pinos";
+			arreglo[n].entrega.recogo_en_tienda.numero_avenida = 654;
+			break;
+		case 'M':
+			arreglo[n].entrega.recogo_en_tienda.distrito = "Miraflores";
+			arreglo[n].entrega.recogo_en_tienda.urbanizacion = "Las Gardenias";
+			arreglo[n].entrega.recogo_en_tienda.avenida = "Martinto";
+			arreglo[n].entrega.recogo_en_tienda.numero_avenida = 164;
+			break;
+		default:
+			cout << "\nOpción inválida, intente de nuevo...\n";
+			break;
+		}
+	} while (arreglo[n].entrega.recogo_en_tienda.local != 'M' && arreglo[n].entrega.recogo_en_tienda.local != 'S');
+	cout << "\n\tDIRECCION DEL LOCAL:" << endl;
+	cout << "\tAv. " << arreglo[n].entrega.recogo_en_tienda.avenida << " " << arreglo[n].entrega.recogo_en_tienda.urbanizacion << " " << arreglo[n].entrega.recogo_en_tienda.numero_avenida << ", " << arreglo[n].entrega.recogo_en_tienda.distrito << " Lima";
+	cout << "\n\tConfirmar entrega?";
+	cout << "\n\t---------------";
+	cout << "\n\t S: Si | N: No ";
+	cout << "\n\t---------------\n";
+	do {
+		cout << "\n\tRespuesta: "; cin >> confirmar_entrega;
+		if (confirmar_entrega == 's' || confirmar_entrega == 'n')
+			confirmar_entrega = toupper(confirmar_entrega);
+		if (confirmar_entrega != 'S' && confirmar_entrega != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...";
+	} while (confirmar_entrega != 'S' && confirmar_entrega != 'N');
+	switch (confirmar_entrega)
+	{
+	case 'S':
+		arreglo[n].entrega.entregado = true;
+		break;
+	case 'N':
+		cout << "\n\tReformular entrega?";
+		cout << "\n\t---------------";
+		cout << "\n\t S: Si | N: No";
+		cout << "\n\t---------------\n";
+		do {
+			cout<< "\n\tRespuesta: "; cin >> reformular_entrega;
+			if (reformular_entrega == 's' || reformular_entrega == 'n')
+				reformular_entrega = toupper(reformular_entrega);
+			if (reformular_entrega != 'S' && reformular_entrega != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...";
+		} while (reformular_entrega != 'S' && reformular_entrega != 'N');
+		switch (reformular_entrega)
+		{
+		case 'S':
+			RealizarEntrega(arreglo, n);
+			break;
+		case 'N':
+			cout << "\n\tSalir?";
+			cout << "\n\t---------------";
+			cout << "\n\t S: si | N: no ";
+			cout << "\n\t---------------";
+			do {
+				cout <<"\n\tRespuesta: "; cin >> opcion_salir;
+				if (opcion_salir == 's' || opcion_salir == 'n')
+					opcion_salir = toupper(opcion_salir);
+				if (opcion_salir != 'S' && opcion_salir != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (opcion_salir != 'S' && opcion_salir != 'N');
+			switch (opcion_salir)
+			{
+			case 'S':
+				NuevoComprador(arreglo, n);
+				break;
+			case 'N':
+				cout << "\n\tReiniciando datos de direccion...\n";
+				MetodoEntregaLibro(n, arreglo);
+				break;
+			}
+		}
+		break;
+	}
+}
+
+void EnvioDomicilio(int n, Venta* arreglo)
+{
+	cout << "\n\t===========================================================";
+	cout << "\n\t     ¿Tu direccion está en San Isidro o Miraflores?";
+	cout << "\n\t    ¡Usa el nuevo panel de seleccion automatico para  ";
+	cout << "\n\t mejorar la precision de la digitalizacion de la direccion!";
+	cout << "\n\t===========================================================";
+	cout << "\n\n\t Usar panel?";
+	cout << "\n\t---------------";
+	cout << "\n\t S: si | N: no";
+	cout << "\n\t---------------\n";
+	do {
+		cout << "\n\tRespuesta"; cin >> arreglo[n].entrega.envio_a_domicilio.tipo_direccion;
+		if (arreglo[n].entrega.envio_a_domicilio.tipo_direccion == 's' || arreglo[n].entrega.envio_a_domicilio.tipo_direccion == 'n')
+			arreglo[n].entrega.envio_a_domicilio.tipo_direccion = toupper(arreglo[n].entrega.envio_a_domicilio.tipo_direccion);
+		if (arreglo[n].entrega.envio_a_domicilio.tipo_direccion != 'S' && arreglo[n].entrega.envio_a_domicilio.tipo_direccion != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...\n";
+	} while (arreglo[n].entrega.envio_a_domicilio.tipo_direccion != 'S' && arreglo[n].entrega.envio_a_domicilio.tipo_direccion != 'N');
+	switch (arreglo[n].entrega.envio_a_domicilio.tipo_direccion)
+	{
+	case 'S':
+		DireccionAutomatica(arreglo, n);
+		break;
+	case 'N':
+		DireccionManual(arreglo, n);
+		break;
+	}
+}
+
+void DireccionAutomatica(Venta* arreglo, int n)
+{
+	arreglo[n].entrega.envio_a_domicilio.domicilio.ciudad = "Lima";
+	AutoUrbanizacion(arreglo, n);
+	AutoCalles(arreglo, n);
+	do {
+		cout << "\n\tNumero de domicilio: "; cin >> arreglo[n].entrega.envio_a_domicilio.domicilio.numero_domicilio;
+	} while (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_domicilio < 100 || arreglo[n].entrega.envio_a_domicilio.domicilio.numero_domicilio > 999);
+	char opcion_distrito, confirmar_entrega, reformular_entrega, opcion_salir;
+	cout << "\n\tDIRECCION REGISTRADA:\n";
+	cout << "\tAv. " << arreglo[n].entrega.envio_a_domicilio.domicilio.calle_avenida << " " << arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion << " " << arreglo[n].entrega.envio_a_domicilio.domicilio.numero_domicilio << ", " << arreglo[n].entrega.envio_a_domicilio.domicilio.distrito << " " << arreglo[n].entrega.envio_a_domicilio.domicilio.ciudad;
+	cout << "\n\n\tConfirmar entrega?";
+	cout << "\n\t---------------";
+	cout << "\n\t S: Si | N: No ";
+	cout << "\n\t---------------";
+	do {
+		cout << "Respuesta: "; cin >> confirmar_entrega;
+		if (confirmar_entrega == 's' || confirmar_entrega == 'n')
+			confirmar_entrega = toupper(confirmar_entrega);
+		if (confirmar_entrega != 'S' && confirmar_entrega != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...";
+	} while (confirmar_entrega != 'S' && confirmar_entrega != 'N');
+	switch (confirmar_entrega)
+	{
+	case 'S':
+		break;
+	case 'N':
+		cout << "\n\tReformular entrega?";
+		cout << "\n\t---------------";
+		cout << "\n\t S: Si | N: No ";
+		cout << "\n\t---------------\n";
+		do {
+			cout << "\n\tRespuesta: "; cin >> reformular_entrega;
+			if (reformular_entrega == 's' || reformular_entrega == 'n')
+				reformular_entrega = toupper(reformular_entrega);
+			if (reformular_entrega != 'S' && reformular_entrega != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...";
+		} while (reformular_entrega != 'S' && reformular_entrega != 'N');
+		switch (reformular_entrega)
+		{
+		case 'S':
+			arreglo[n].entrega.entregado = true;
+			break;
+		case 'N':
+			cout << "\n\tSalir?";
+			cout << "\n\t---------------";
+			cout << "\n\t S: Si | N: No ";
+			cout << "\n\t---------------\n";
+			do {
+				cout << "\n\tRespuesta: "; cin >> opcion_salir;
+				if (opcion_salir == 's' || opcion_salir == 'n')
+					opcion_salir = toupper(opcion_salir);
+				if (opcion_salir != 'S' && opcion_salir != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (opcion_salir != 'S' && opcion_salir != 'N');
+			switch (opcion_salir)
+			{
+			case 'S':
+				ProcesarCompra(arreglo, n);
+				break;
+			case 'N':
+				cout << "\n\tReiniciando datos de direccion...\n";
+				MetodoEntregaLibro(n, arreglo);
+				break;
+			}
+		}
+		break;
+	}
+}
+
+void AutoUrbanizacion(Venta* arreglo, int n)
+{
+	char MListado;
+	char urbanizacion_no_encontrada;
+	cout << "\n\tGenial!";
+	cout << "\n\tEn donde esta la direccion de envio?";
+	cout << "\n\t-------------------------------";
+	cout << "\n\t M: Miraflores | S: San Isidro ";
+	cout << "\n\t-------------------------------\n";
+	do {
+		cout << "\n\tRespuesta: "; cin >> arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion;
+		if (arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion == 'm' || arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion == 's')
+			arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion = toupper(arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion);
+		if (arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion != 'M' && arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion != 'S')
+			cout << "\n\tOpción inválida, intente de nuevo...\n";
+	} while (arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion != 'M' && arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion != 'S');
+	switch (arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion)
+	{
+	case 'M':
+		arreglo[n].entrega.envio_a_domicilio.domicilio.distrito = "Miraflores";
+		cout << "\n\tUrbanizaciones en Miraflores\n\t---------------------";
+		cout << "\n\tListado 1 (A - R):";
+		cout << "\n\tAurora (1)\n\tBalconcillo (2)\n\tCorpac (3)\n\tLa Castellana (4)\n\tLa Calera (5)\n\tLa Aurora (6)\n\tLas Gardenias (7)\n\tRicardo Palma(8)\n\t---------------------";
+		cout << "\n\n\tEsta tu direccion en este listado?";
+		cout << "\n\t---------------";
+		cout << "\n\t S: Si | N: No ";
+		cout << "\n\t---------------\n";
+		do {
+			cout << "\n\tRespuesta: "; cin >> MListado;
+			if (MListado == 's' || MListado == 'n')
+				MListado = toupper(MListado);
+			if (MListado != 'S' && MListado != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...\n";
+		} while (MListado != 'S' && MListado != 'N');
+		switch (MListado)
+		{
+		case 'S':
+			do {
+				cout << "\n\tSeleccionar urbanizacion segun el numero señalado:";
+				cout << "\n\tUrbanizacion #"; cin >> arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion;
+			} while (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion < 1 || arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion > 10);
+
+			if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 1)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Aurora";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 2)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Balconcillo";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 3)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Corpac";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 4)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "La castellana";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 5)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "La Calera";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 6)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "La Aurora";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 7)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Las Gardenias";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 8)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Ricardo Palma";
+
+			break;
+		case 'N':
+			cout << "\n\n\t---------------------\n\tListado 2 (S):";
+			cout << "\n\tSanta Cruz(9)\n\tSan Antonio(10)";
+			cout << "\n\t---------------------";
+			cout << "\n\n\tEsta tu direccion en este listado?";
+			cout << "\n\t---------------";
+			cout << "\n\t S: Si | N: No ";
+			cout << "\n\t---------------\n";
+			do {
+				cout << "\n\tRespuesta: "; cin >> MListado;
+				if (MListado == 's' || MListado == 'n')
+					MListado = toupper(MListado);
+				if (MListado != 'S' && MListado != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (MListado != 'S' && MListado != 'N');
+			switch (MListado)
+			{
+			case 'S':
+				do {
+					cout << "\n\tSeleccionar urbanizacion segun el numero señalado:";
+					cout << "\n\tUrbanizacion #"; cin >> arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion;
+				} while (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion != 9 && arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion != 10);
+
+				if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 9)
+					arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "San Antonio";
+				else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 10)
+					arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "San Ramon";
+				break;
+			case 'N':
+				cout << "\n\tDesea volver al listado 1 o digitar la direccion manualmente?";
+				cout << "\n\t-----------------------------------------------------";
+				cout << "\n\t V: volver al listado 1 | M: digitalizar manualmente ";
+				cout << "\n\t-----------------------------------------------------\n";
+				do {
+					cout << "\n\tRespuesta: "; cin >> urbanizacion_no_encontrada;
+					if (urbanizacion_no_encontrada == 'v' || urbanizacion_no_encontrada == 'm')
+						urbanizacion_no_encontrada = toupper(urbanizacion_no_encontrada);
+					if (urbanizacion_no_encontrada != 'V' && urbanizacion_no_encontrada != 'M')
+						cout << "\n\tOpcion invalida, intente de nuevo...\n";
+				} while (urbanizacion_no_encontrada != 'V' && urbanizacion_no_encontrada != 'M');
+				switch (urbanizacion_no_encontrada)
+				{
+				case 'V':
+					AutoUrbanizacion(arreglo, n);
+					break;
+				case 'M':
+					DireccionManual(arreglo, n);
+				}
+				break;
+			}
+			break;
+		}
+		break;
+	case 'S':
+		arreglo[n].entrega.envio_a_domicilio.domicilio.distrito = "San Isidro";
+		cout << "\n\tUrbanizaciones en San Isidro\n\t---------------------";
+		cout << "\n\tAurora (1)\n\tCorpac (2)\n\tCountry Club (3)\n\tEl Olivar (4)\n\tLa Calera (5)\n\tLos Rosales (6)\n\tSan Isidro Centro (7)\n\tSan Isidro Labrador (8)\n\tSanta Catalina (9)\n\t---------------------";
+		cout << "\n\n\tEsta tu direccion en este listado?";
+		cout << "\n\t---------------";
+		cout << "\n\t S: Si | N: No ";
+		cout << "\n\t---------------\n";
+		do {
+			cout << "\n\tRespuesta: "; cin >> MListado;
+			if (MListado == 's' || MListado == 'n')
+				MListado = toupper(MListado);
+			if (MListado != 'S' && MListado != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...\n";
+		} while (MListado != 'S' && MListado != 'N');
+		switch (MListado)
+		{
+		case 'S':
+			do {
+				cout << "\n\tSeleccionar urbanizacion segun el numero señalado:";
+				cout << "\n\tUrbanizacion #"; cin >> arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion;
+			} while (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion <= 1 || arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion >= 10);
+
+			if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 1)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Aurora";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 2)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Corpac";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 3)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Country Club";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 4)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "El Olivar";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 5)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "La Calera";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 6)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Los Rosales";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 7)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "San Isidro Centro";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 8)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "San Isidro Labrador";
+			else if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion == 9)
+				arreglo[n].entrega.envio_a_domicilio.domicilio.Urbanizacion = "Santa Catalina";
+			break;
+		case 'N':
+			cout << "\n\tDigitar la direccion manualmente?";
+			cout << "\n\t-----------------------------------------------------";
+			cout << "\n\t V: volver al panel manual | M: digitalizar manualmente ";
+			cout << "\n\t-----------------------------------------------------\n";
+			do {
+				cout << "\n\tRespuesta: "; cin >> urbanizacion_no_encontrada;
+				if (urbanizacion_no_encontrada == 'v' || urbanizacion_no_encontrada == 'm')
+					urbanizacion_no_encontrada = toupper(urbanizacion_no_encontrada);
+				if (urbanizacion_no_encontrada != 'V' && urbanizacion_no_encontrada != 'M')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (urbanizacion_no_encontrada != 'V' && urbanizacion_no_encontrada != 'M');
+			switch (urbanizacion_no_encontrada)
+			{
+			case 'V':
+				AutoUrbanizacion(arreglo, n);
+				break;
+			case 'M':
+				DireccionManual(arreglo, n);
+				break;
+			}
+			break;
+		}
+		break;
+	}
+}
+
+void AutoCalles(Venta* arreglo, int n)
+{
+	string SanIsidroCalles[9][8] =
+	{
+		{"Aurelio Miro Quesada", "Las Flores", "Augusto Perez Aranibar", "Conquistadores", "Republica de Panama", "Salaverry"},
+		{"Guardia Civil", "Paseo de la República", "Canaval y Moreyra", "Del Parque Norte", "Juan de Aliaga", "Coronel Portillo", "Los Precursores", "Petit Thouars"},
+		{"Prescott","Camino Real","Conquistadores","Los Pinos","Pezet","Salaverry","Dos de Mayo","Javier Prado Oeste"},
+		{"Arequipa","Pardo y Aliaga","Comandante Espinar","Emilio Cavenecia","El Olivar","Los Castanos","Choquehuanca","Los Sauces"},
+		{"Las Begonias","La Calera","El Rosario","Emilio Cavenecia","Coronel Portillo","Las Lomas","Chinchon","Las Palmeras"},
+		{"Javier Prado Oeste","Los Tulipanes","Los Claveles","Los Jazmines","Los Cedros","Los Eucaliptos","Los Alisos","Los Narcisos"},
+		{"Jorge Basadre","Los Libertadores","Juan de Arona","Victor Andres Belaunde","Paseo de la Republica","Rivera Navarrete","Guardia Civil","Las Begonias"},
+		{"Las Camelias","Conquistadores del Peru","Del Parque Norte","Pardo y Aliaga","Las Flores","Los Conquistadores","Javier Pardo Oeste","Camino Real"},
+		{"Javier Prado Oeste","Los Castanos","Emilio Cavenecia","Salaverry","Dos de Mayo","Rivera Navarrete","Victor Andres Belaunde","El Bosque"},
+	};
+	string MirafloresCalles[10][8] =
+	{
+		{"Aurelio Miro Quesada", "Las Flores", "Augusto Perez Aranibar", "Conquistadores", "Republica de Panama", "Salaverry"},
+		{"Canada","Javier Prado Este","Mexico","28 de Julio","Iquitos","San Pablo","Aviacion","Nicolas Arriola"},
+		{"Prescott","Camino Real","Conquistadores","Los Pinos","Pezet","Salaverry","Dos de Mayo","Javier Prado Oeste"},
+		{"Javier Prado Este","San Luis","Primavera","Bouleveard","Los Castanos","Los Nogales","Los Alisos","Los Sauces"},
+		{"La Calera","Las Flores","Los Eucaliptos","Los Rosales","Los Sauces","Los Naranjos","Los Olivos","Las Camelias"},
+		{"Ricardo Palma","Angamos Oeste","Pardo y Aliaga","Comandante Espinar","Santa Cruz","Jose Galvez Barrenechea","Reducto","Colina"},
+		{"Ricardo Palma","Manuel Bonilla","Martinto","Los Libertadores","Los Pinos","Los Eucaliptos","Los Naranjos","Los Ficus"},
+		{"Santa Cruz","Comandante Espinar","Ricardo Palma","Angamos Oeste","Benavides","Paseo de la Respublica","Armendariz","Larco"},
+		{"San Rafael","San Jose","San Carlos","San Agustin","San Pedro","Jose","San Antonio","San Ramon"},
+		{"San Ramon","San Antonio","San Pedro","San Martin","San Jose","San Miguel","San Isidro","San Fernando"},
+	};
+	bool busqueda;
+	char distrito, reinicio, reinicio2, opcion_salir;
+	int fila = arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion;
+	switch (arreglo[n].entrega.envio_a_domicilio.domicilio.distrito_opcion)
+	{
+	case 'M':
+		cout << "\n\tDigitar calle o avenida: ";
+		cin.ignore();
+		getline(cin, arreglo[n].entrega.envio_a_domicilio.domicilio.calle_avenida);
+		for (int i = 0; i < 8; i++)
+		{
+			if (MirafloresCalles[fila - 1][i] == arreglo[n].entrega.envio_a_domicilio.domicilio.calle_avenida)
+			{
+				busqueda = true;
+				break;
+			}
+			else
+				busqueda = false;
+		}
+		if (busqueda == true)
+			cout << "\n\tDatos de envio registrados";
+		else if (busqueda == false)
+		{
+			cout << "\n\tCalle no encontrada";
+			cout << "\n\tDesea volver a ingresar la calle o avenida?";
+			cout << "\n\t---------------";
+			cout << "\n\t S: Si | N: No ";
+			cout << "\n\t---------------\n";
+			do {
+				cout << "\n\tRespuesta: "; cin >> reinicio;
+				if (reinicio == 's' || reinicio == 'n')
+					reinicio = toupper(reinicio);
+				if (reinicio != 'S' && reinicio != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (reinicio != 'S' && reinicio != 'N');
+			switch (reinicio)
+			{
+			case 'S':
+				AutoCalles(arreglo, n);
+				break;
+			case 'N':
+				cout << "\n\tDesea ingresar la direccion manualmente?";
+				cout << "\n\t---------------";
+				cout << "\n\t S: Si | N: No ";
+				cout << "\n\t---------------\n";
+				do {
+					cout << "\n\tRespuesta: "; cin >> reinicio2;
+					if (reinicio2 == 's' || reinicio2 == 'n')
+						reinicio2 = toupper(reinicio2);
+					if (reinicio2 != 'S' && reinicio2 != 'N')
+						cout << "\n\tOpcion invalida, intente de nuevo...\n";
+				} while (reinicio2 != 'S' && reinicio2 != 'N');
+				switch (reinicio2)
+				{
+				case 'S':
+					DireccionManual(arreglo, n);
+					break;
+				case 'N':
+					cout << "\n\tSalir?\n";
+					cout << "\n\t---------------";
+					cout << "\n\t S: Si | N: No ";
+					cout << "\n\t---------------\n";
+					do {
+						cout << "\n\tRespuesta: "; cin >> opcion_salir;
+						if (opcion_salir == 's' || opcion_salir == 'n')
+							opcion_salir = toupper(opcion_salir);
+						if (opcion_salir != 'S' && opcion_salir != 'N')
+							cout << "\n\tOpcion invalida, intente de nuevo...\n";
+					} while (opcion_salir != 'S' && opcion_salir != 'N');
+					switch (opcion_salir)
+					{
+					case 'S':
+						ProcesarCompra(arreglo, n);
+						break;
+					case 'N':
+						AutoCalles(arreglo, n);
+						break;
+					}
+					break;
+				}
+				break;
+			}
+		}
+		break;
+	case 'S':
+		cout << "\n\tDigitar calle o avenida: ";
+		cin.ignore();
+		getline(cin, arreglo[n].entrega.envio_a_domicilio.domicilio.calle_avenida);
+		for (int i = 0; i < 8; i++)
+		{
+			if (SanIsidroCalles[fila - 1][i] == arreglo[n].entrega.envio_a_domicilio.domicilio.calle_avenida)
+			{
+				busqueda = true;
+				break;
+			}
+			else
+				busqueda = false;
+		}
+		if (busqueda == true)
+			cout << "\n\tDatos de envio registrados";
+		else if (busqueda == false)
+		{
+			cout << "\n\tCalle no encontrada";
+			cout << "\n\tDesea volver a ingresar la calle o avenida?";
+			cout << "\n\t---------------";
+			cout << "\n\t S: Si | N: No ";
+			cout << "\n\t---------------\n";
+			do {
+				cout << "\n\tRespuesta: "; cin >> reinicio;
+				if (reinicio == 's' || reinicio == 'n')
+					reinicio = toupper(reinicio);
+				if (reinicio != 'S' && reinicio != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (reinicio != 'S' && reinicio != 'N');
+			switch (reinicio)
+			{
+			case 'S':
+				AutoCalles(arreglo, n);
+				break;
+			case 'N':
+				cout << "\n\tDesea ingresar la direccion manualmente?";
+				cout << "\n\t---------------";
+				cout << "\n\t S: Si | N: No ";
+				cout << "\n\t---------------\n";
+				do {
+					cout << "\n\tRespuesta: "; cin >> reinicio2;
+					if (reinicio2 == 's' || reinicio2 == 'n')
+						reinicio2 = toupper(reinicio2);
+					if (reinicio2 != 'S' && reinicio2 != 'N')
+						cout << "\n\tOpcion invalida, intente de nuevo...\n";
+				} while (reinicio2 != 'S' && reinicio2 != 'N');
+				switch (reinicio2)
+				{
+				case 'S':
+					DireccionManual(arreglo, n);
+					break;
+				case 'N':
+					cout << "\n\tSalir?\n";
+					cout << "\n\t---------------";
+					cout << "\n\t S: Si | N: No ";
+					cout << "\n\t---------------\n";
+					do {
+						cout << "\n\tRespuesta: "; cin >> opcion_salir;
+						if (opcion_salir == 's' || opcion_salir == 'n')
+							opcion_salir = toupper(opcion_salir);
+						if (opcion_salir != 'S' && opcion_salir != 'N')
+							cout << "\n\tOpcion invalida, intente de nuevo...\n";
+					} while (opcion_salir != 'S' && opcion_salir != 'N');
+					switch (opcion_salir)
+					{
+					case 'S':
+						ProcesarCompra(arreglo, n);
+						break;
+					case 'N':
+						CompraApp(arreglo, n);
+						break;
+					}
+					break;
+				}
+				break;
+			}
+		}
+		break;
+	}
+}
+
+void DireccionManual(Venta* arreglo, int n)
+{
+	cout << "\tCiudad          : ";
+	cin.ignore();
+	getline(cin, arreglo[n].entrega.envio_a_domicilio.domicilio.ciudad);
+	cout << "\tDistrito        : ";
+	cin.ignore();
+	getline(cin, arreglo[n].entrega.envio_a_domicilio.domicilio.distrito);
+	cout << "\tCalle/Avenida   : ";
+	cin.ignore();
+	getline(cin, arreglo[n].entrega.envio_a_domicilio.domicilio.calle_avenida);
+	do {
+		cout << "\tNumero de calle : "; cin >> arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion;
+		if (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion < 100 && arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion > 999)
+			cout << "\n\tOpcion invalida, intenta de nuevo\n";
+	} while (arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion < 100 && arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion > 999);
+	do {
+		cout << "\tCodigo Postal   : "; cin >> arreglo[n].entrega.envio_a_domicilio.domicilio.codigo_postal;
+		if (arreglo[n].entrega.envio_a_domicilio.domicilio.codigo_postal < 1000 && arreglo[n].entrega.envio_a_domicilio.domicilio.codigo_postal > 9999)
+			cout << "\n\tOpcion invalida, intenta de nuevo\n";
+	} while (arreglo[n].entrega.envio_a_domicilio.domicilio.codigo_postal < 1000 && arreglo[n].entrega.envio_a_domicilio.domicilio.codigo_postal > 9999);
+	char opcion_distrito, confirmar_entrega, reformular_entrega, opcion_salir;
+	cout << "\nDireccion: Av." << arreglo[n].entrega.envio_a_domicilio.domicilio.calle_avenida << " " << arreglo[n].entrega.envio_a_domicilio.domicilio.numero_urbanizacion << ", " << arreglo[n].entrega.envio_a_domicilio.domicilio.distrito << " " << arreglo[n].entrega.envio_a_domicilio.domicilio.codigo_postal << "\n";
+	cout << "\n\tDireccion de entrega correcta?";
+	cout << "\n\t---------------";
+	cout << "\n\t S: Si | N: No ";
+	cout << "\n\t---------------\n";
+	do {
+		cout << "\n\tRespuesta: "; cin >> confirmar_entrega;
+		if (confirmar_entrega == 's' || confirmar_entrega == 'n')
+			confirmar_entrega = toupper(confirmar_entrega);
+		if (confirmar_entrega != 'S' && confirmar_entrega != 'N')
+			cout << "\n\tOpcion invalida, intente de nuevo...";
+	} while (confirmar_entrega != 'S' && confirmar_entrega != 'N');
+	switch (confirmar_entrega)
+	{
+	case 'S':
+		arreglo[n].entrega.entregado = true;
+		break;
+	case 'N':
+		cout << "\n\tConfirmar entrega?";
+		cout << "\n\t---------------";
+		cout << "\n\t S: Si | N: No ";
+		cout << "\n\t---------------\n";
+		do {
+			cout << "\n\tRespuesta: "; cin >> reformular_entrega;
+			if (reformular_entrega == 's' || reformular_entrega == 'n')
+				reformular_entrega = toupper(reformular_entrega);
+			if (reformular_entrega != 'S' && reformular_entrega != 'N')
+				cout << "\n\tOpcion invalida, intente de nuevo...";
+		} while (reformular_entrega != 'S' && reformular_entrega != 'N');
+		switch (reformular_entrega)
+		{
+		case 'S':
+			break;
+		case 'N':
+			cout << "\n\tSalir?\n";
+			cout << "\n\t---------------";
+			cout << "\n\t S: Si | N: No ";
+			cout << "\n\t---------------\n";
+			do {
+				cout << "\n\tRespuesta: "; cin >> opcion_salir;
+				if (opcion_salir == 's' || opcion_salir == 'n')
+					opcion_salir = toupper(opcion_salir);
+				if (opcion_salir != 'S' && opcion_salir != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (opcion_salir != 'S' && opcion_salir != 'N');
+			switch (opcion_salir)
+			{
+			case 'S':
+				ProcesarCompra(arreglo, n);
+				break;
+			case 'N':
+				cout << "\n\tReiniciando datos de direccion...\n";
+				MetodoEntregaLibro(n, arreglo);
+				break;
+			}
+		}
+		break;
+	}
+
+}
+
+void Boleta(Venta* arreglo, int n)
+{
+	auto Actual = chrono::system_clock::now();
+	auto ActualEpoch = chrono::system_clock::to_time_t(Actual);
+	tm* TiempoLocal = localtime(&ActualEpoch);
+	cout << "\n\t===================================== ";
+	cout << "\n\t        BOLETA DE LA COMPRA" << endl;
+	cout << "\t=====================================" << endl;
+	cout << "\t  Nombre             : " << arreglo[n].cliente.nombres << endl;
+	cout << "\t  Apellido           : " << arreglo[n].cliente.apellidos << endl;
+	cout << "\t  DNI                : " << arreglo[n].cliente.DNI << endl;
+	cout << "\t  Fecha de emision   : " << (TiempoLocal->tm_mday) << " / " << (TiempoLocal->tm_mon + 1) << " / " << (TiempoLocal->tm_year + 1900) << endl;
+	cout << "\t  Costo inicial      : " << arreglo[n].compra.App.datos_libro.precio << endl;
+	cout << "\t  IGV                : 18%" << endl;
+	cout << "\t  Importe por IGV    : S/" << arreglo[n].compra.App.datos_libro.precio * 0.18 << endl;
+	cout << "\t  Costo total        : S/" << arreglo[n].compra.App.datos_libro.precio * 1.18 << endl;
+	cout << "\t  Plataforma de pago : " << arreglo[n].compra.App.datos_pago.metodo_pago << endl;
+	cout << "\t=====================================" << endl;
+
+	cout << "\n\t    MUCHAS GRACIAS POR SU COMPRA";
+	cout << "\n\t(Copia enviada al gmail " << arreglo[n].cliente.correo <<")";
+}
+
+void Reportes(Venta* arreglo, int n)
+{
+	char opcion_reporte;
+	cout << "\n\t         REPORTES DISPONIBLES";
+	cout << "\n\t--------------------------------------";
+	cout << "\n\t(1) Recaudacion anual";
+	cout << "\n\t(2) Porcentajes de ventas por modalidad";
+	cout << "\n\t(3) Ventas totales";
+	cout << "\n\t(4) Ventas femeninas";
+	cout << "\n\t(5) Conceso del panel direccion";
+	cout << "\n\t(6) Eventos";
+	cout << "\n\t(7) Salir";
+	cout << "\n\t--------------------------------------\n";
+	do {
+		cout << "\n\tReporte #"; cin >> opcion_reporte;
+		switch (opcion_reporte)
+		{
+		case '1':
+			ReporteRecaudacionAnual(arreglo, n);
+			break;
+		case '2':
+			ReportePorcentajeVentasModalidad(arreglo, n);
+			break;
+		case '3':
+			ReporteVentasTotales(arreglo, n);
+			break;
+		case '4':
+			ReporteVentasFemeninas(arreglo, n);
+			break;
+		case '5':
+			ReportePanelDireccion(arreglo, n);
+			break;
+		case '6':
+			ReporteEventos(arreglo, n);
+			break;
+		case '7':
+			Menu(arreglo, n);
+			break;
+		default:
+			cout << "\n\tOpcion invalida, intente de nuevo...";
+			break;
+		}
+	} while (opcion_reporte != '1' && opcion_reporte != '2' && opcion_reporte != '3' && opcion_reporte != '4' && opcion_reporte != '5' && opcion_reporte != '6');
+}
+
+void ReporteRecaudacionAnual(Venta* arreglo, int n) {
+	int Opciones;
+	int Año;
+	int Regreso;
+	int Mes;
+	int RegresoA;
+
+	cout << "\n\t===============================================" << endl;
+	cout << "\t Reporte de Recaudacion Anual (*=1500 ventas)" << endl;
+	cout << "\t ***************** (25,500)" << endl;
+	cout << "\t Se realizaron 25,500 ventas entre 2022-2024." << endl;
+	cout << "\t===============================================" << endl;
+
+	cout << "\n\tLe gustaría ver las ventas de un año en específico (1) o regresar al menu (2)?: "; cin >> Opciones;
+
+	while (Opciones != 1 && Opciones != 2) {
+		cout << "\tOpcion invalida." << endl;
+		cout << "\n\tLe gustaría ver las ventas de un año en específico (1) o regresar al menu (2)?: "; cin >> Opciones;
+	}
+
+	if (Opciones == 1) {
+		cout << "\n\tIngrese año específico (2022-2024): "; cin >> Año;
+
+		while (Año != 2022 && Año != 2023 && Año != 2024) {
+			cout << "\tOpcion invalida." << endl;
+			cout << "\n\tIngrese año específico (2022-2024): "; cin >> Año;
+		}
+
+		switch (Año) {
+		case 2022:
+			cout << "\n\t===============================================" << endl;
+			cout << "\t               HISTORIAL DEL 2022" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t Cantidad de ventas en 2022   : 9,000" << endl;
+			cout << "\t Cantidad de comics en 2022   : 3,700" << endl;
+			cout << "\t Cantidad de mangas en 2022   : 5,300" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t                GRAFICO DE BARRAS" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t10,000      ____           ____                  " << endl;
+			cout << "\t80,00      |    |____     |    |____ ____        " << endl;
+			cout << "\t60,00      |    |    |____|    |    |    |       " << endl;
+			cout << "\t40,00  ____|    |    |    |    |    |    |____   " << endl;
+			cout << "\t20,00 |    |    |    |    |    |    |    |    |  " << endl;
+			cout << "\t===============================================" << endl;
+
+			cout << "\n\tDesea ver la cantidad de ventas por meses (1) o regresar al menu (2)?: "; cin >> Regreso;
+
+			while (Regreso != 1 && Regreso != 2) {
+				cout << "\tOpcion invalida." << endl;
+				cout << "\n\tDesea ver la cantidad de ventas por meses (1) o regresar al menu (2)?: "; cin >> Regreso;
+			}
+
+			if (Regreso == 1) {
+				cout << "\tElija mes (1-12): "; cin >> Mes;
+
+				while (Mes != 1 && Mes != 2 && Mes != 3 && Mes != 4 && Mes != 5 && Mes != 6 && Mes != 7 && Mes != 8 && Mes != 9 && Mes != 10 && Mes != 11 && Mes != 12) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tElija mes (1-12): "; cin >> Mes;
+				}
+
+				switch (Mes) {
+				case 1:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Enero  : 1,000" << endl;
+					cout << "\t Cantidad de comics en Enero  : 700" << endl;
+					cout << "\t Cantidad de mangas en Enero  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 2:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Febrero: 800" << endl;
+					cout << "\t Cantidad de comics en Febrero: 400" << endl;
+					cout << "\t Cantidad de mangas en Febrero: 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 3:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Marzo  : 700" << endl;
+					cout << "\t Cantidad de comics en Marzo  : 300" << endl;
+					cout << "\t Cantidad de mangas en Marzo  : 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 4:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Abril  : 600" << endl;
+					cout << "\t Cantidad de comics en Abril  : 300" << endl;
+					cout << "\t Cantidad de mangas en Abril  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 5:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Mayo   : 800" << endl;
+					cout << "\t Cantidad de comics en Mayo   : 400" << endl;
+					cout << "\t Cantidad de mangas en Mayo   : 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 6:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Junio  : 800" << endl;
+					cout << "\t Cantidad de comics en Junio  : 400" << endl;
+					cout << "\t Cantidad de mangas en Junio  : 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 7:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Julio  : 800" << endl;
+					cout << "\t Cantidad de comics en Julio  : 400" << endl;
+					cout << "\t Cantidad de mangas en Julio  : 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 8:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Agosto : 700" << endl;
+					cout << "\t Cantidad de comics en Agosto : 300" << endl;
+					cout << "\t Cantidad de mangas en Agosto : 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 9:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Septiembre: 800" << endl;
+					cout << "\t Cantidad de comics en Septiembre: 400" << endl;
+					cout << "\t Cantidad de mangas en Septiembre: 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 10:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Octubre: 700" << endl;
+					cout << "\t Cantidad de comics en Octubre: 400" << endl;
+					cout << "\t Cantidad de mangas en Octubre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 11:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Noviembre: 700" << endl;
+					cout << "\t Cantidad de comics en Noviembre: 300" << endl;
+					cout << "\t Cantidad de mangas en Noviembre: 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 12:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Diciembre: 600" << endl;
+					cout << "\t Cantidad de comics en Diciembre: 400" << endl;
+					cout << "\t Cantidad de mangas en Diciembre: 200" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				}
+
+				cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> RegresoA;
+				while (RegresoA != 1 && RegresoA != 2) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> RegresoA;
+				}
+				if (RegresoA == 1) {
+					Reportes(arreglo, n);
+				}
+				else if (RegresoA == 2) {
+					cout << "\n\tVuelva pronto!";
+				}
+
+			}
+			else if (Regreso == 2) {
+				Reportes(arreglo, n);
+			}
+			break;
+
+		case 2023:
+			cout << "\n\t===============================================" << endl;
+			cout << "\t               HISTORIAL DEL 2023" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t Cantidad de ventas en 2023   : 8,000" << endl;
+			cout << "\t Cantidad de comics en 2023   : 4,300" << endl;
+			cout << "\t Cantidad de mangas en 2023   : 3,700" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t                GRAFICO DE BARRAS" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t1,0000      ____           ____                  " << endl;
+			cout << "\t8,000      |    |____     |    |____ ____        " << endl;
+			cout << "\t6,000      |    |    |____|    |    |    |       " << endl;
+			cout << "\t4,000  ____|    |    |    |    |    |    |____   " << endl;
+			cout << "\t2,000 |    |    |    |    |    |    |    |    |  " << endl;
+			cout << "\t===============================================" << endl;
+
+			cout << "\n\tDesea ver la cantidad de ventas por meses (1) o regresar al menu (2)?: "; cin >> Regreso;
+
+			while (Regreso != 1 && Regreso != 2) {
+				cout << "\tOpcion invalida." << endl;
+				cout << "\n\tDesea ver la cantidad de ventas por meses (1) o regresar al menu (2)?: "; cin >> Regreso;
+			}
+
+			if (Regreso == 1) {
+				cout << "\tElija mes (1-12): "; cin >> Mes;
+
+				while (Mes != 1 && Mes != 2 && Mes != 3 && Mes != 4 && Mes != 5 && Mes != 6 && Mes != 7 && Mes != 8 && Mes != 9 && Mes != 10 && Mes != 11 && Mes != 12) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tElija mes (1-12): "; cin >> Mes;
+				}
+
+				switch (Mes) {
+				case 1:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Enero  : 700" << endl;
+					cout << "\t Cantidad de comics en Enero  : 400" << endl;
+					cout << "\t Cantidad de mangas en Enero  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 2:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Febrero: 600" << endl;
+					cout << "\t Cantidad de comics en Febrero: 300" << endl;
+					cout << "\t Cantidad de mangas en Febrero: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 3:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Marzo  : 700" << endl;
+					cout << "\t Cantidad de comics en Marzo  : 400" << endl;
+					cout << "\t Cantidad de mangas en Marzo  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 4:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Abril  : 600" << endl;
+					cout << "\t Cantidad de comics en Abril  : 300" << endl;
+					cout << "\t Cantidad de mangas en Abril  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 5:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Mayo   : 600" << endl;
+					cout << "\t Cantidad de comics en Mayo   : 300" << endl;
+					cout << "\t Cantidad de mangas en Mayo   : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 6:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Junio  : 700" << endl;
+					cout << "\t Cantidad de comics en Junio  : 400" << endl;
+					cout << "\t Cantidad de mangas en Junio  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 7:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Julio  : 600" << endl;
+					cout << "\t Cantidad de comics en Julio  : 300" << endl;
+					cout << "\t Cantidad de mangas en Julio  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 8:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Agosto : 700" << endl;
+					cout << "\t Cantidad de comics en Agosto : 400" << endl;
+					cout << "\t Cantidad de mangas en Agosto : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 9:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Septiembre: 600" << endl;
+					cout << "\t Cantidad de comics en Septiembre: 300" << endl;
+					cout << "\t Cantidad de mangas en Septiembre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 10:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Octubre: 700" << endl;
+					cout << "\t Cantidad de comics en Octubre: 400" << endl;
+					cout << "\t Cantidad de mangas en Octubre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 11:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Noviembre: 700" << endl;
+					cout << "\t Cantidad de comics en Noviembre: 400" << endl;
+					cout << "\t Cantidad de mangas en Noviembre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 12:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Diciembre: 600" << endl;
+					cout << "\t Cantidad de comics en Diciembre: 300" << endl;
+					cout << "\t Cantidad de mangas en Diciembre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				}
+
+				cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> RegresoA;
+				while (RegresoA != 1 && RegresoA != 2) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> RegresoA;
+				}
+				if (RegresoA == 1) {
+					Reportes(arreglo, n);
+				}
+				else if (RegresoA == 2) {
+					cout << "\n\tVuelva pronto!";
+				}
+			}
+			else if (Regreso == 2) {
+				Reportes(arreglo, n);
+			}
+			break;
+		case 2024:
+			cout << "\n\t===============================================" << endl;
+			cout << "\t               HISTORIAL DEL 2024" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t Cantidad de ventas en 2024   : 8,500" << endl;
+			cout << "\t Cantidad de comics en 2024   : 4,000" << endl;
+			cout << "\t Cantidad de mangas en 2024   : 4,500" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t                GRAFICO DE BARRAS" << endl;
+			cout << "\t===============================================" << endl;
+			cout << "\t10,000      ____           ____                  " << endl;
+			cout << "\t8,000      |    |____     |    |____ ____        " << endl;
+			cout << "\t6,000      |    |    |____|    |    |    |       " << endl;
+			cout << "\t4,000  ____|    |    |    |    |    |    |____   " << endl;
+			cout << "\t2,000 |    |    |    |    |    |    |    |    |  " << endl;
+			cout << "\t===============================================" << endl;
+
+			cout << "\n\tDesea ver la cantidad de ventas por meses (1) o regresar al menu (2)?: "; cin >> Regreso;
+
+			while (Regreso != 1 && Regreso != 2) {
+				cout << "\tOpcion invalida." << endl;
+				cout << "\n\tDesea ver la cantidad de ventas por meses (1) o regresar al menu (2)?: "; cin >> Regreso;
+			}
+
+			if (Regreso == 1) {
+				cout << "\tElija mes (1-12): "; cin >> Mes;
+
+				while (Mes != 1 && Mes != 2 && Mes != 3 && Mes != 4 && Mes != 5 && Mes != 6 && Mes != 7 && Mes != 8 && Mes != 9 && Mes != 10 && Mes != 11 && Mes != 12) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tElija mes (1-12): "; cin >> Mes;
+				}
+
+				switch (Mes) {
+				case 1:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Enero  : 700" << endl;
+					cout << "\t Cantidad de comics en Enero  : 400" << endl;
+					cout << "\t Cantidad de mangas en Enero  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 2:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Febrero: 700" << endl;
+					cout << "\t Cantidad de comics en Febrero: 300" << endl;
+					cout << "\t Cantidad de mangas en Febrero: 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 3:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Marzo  : 700" << endl;
+					cout << "\t Cantidad de comics en Marzo  : 400" << endl;
+					cout << "\t Cantidad de mangas en Marzo  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 4:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Abril  : 600" << endl;
+					cout << "\t Cantidad de comics en Abril  : 300" << endl;
+					cout << "\t Cantidad de mangas en Abril  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 5:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Mayo   : 700" << endl;
+					cout << "\t Cantidad de comics en Mayo   : 300" << endl;
+					cout << "\t Cantidad de mangas en Mayo   : 400" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 6:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Junio  : 700" << endl;
+					cout << "\t Cantidad de comics en Junio  : 400" << endl;
+					cout << "\t Cantidad de mangas en Junio  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 7:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Julio  : 700" << endl;
+					cout << "\t Cantidad de comics en Julio  : 400" << endl;
+					cout << "\t Cantidad de mangas en Julio  : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 8:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Agosto : 700" << endl;
+					cout << "\t Cantidad de comics en Agosto : 400" << endl;
+					cout << "\t Cantidad de mangas en Agosto : 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 9:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Septiembre: 700" << endl;
+					cout << "\t Cantidad de comics en Septiembre: 400" << endl;
+					cout << "\t Cantidad de mangas en Septiembre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 10:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Octubre: 700" << endl;
+					cout << "\t Cantidad de comics en Octubre: 400" << endl;
+					cout << "\t Cantidad de mangas en Octubre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 11:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Noviembre: 700" << endl;
+					cout << "\t Cantidad de comics en Noviembre: 400" << endl;
+					cout << "\t Cantidad de mangas en Noviembre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				case 12:
+					cout << "\n\t===============================================" << endl;
+					cout << "\t Cantidad de ventas en Diciembre: 600" << endl;
+					cout << "\t Cantidad de comics en Diciembre: 300" << endl;
+					cout << "\t Cantidad de mangas en Diciembre: 300" << endl;
+					cout << "\t===============================================" << endl;
+					break;
+				}
+
+				cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> RegresoA;
+				while (RegresoA != 1 && RegresoA != 2) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> RegresoA;
+				}
+				if (RegresoA == 1) {
+					Reportes(arreglo, n);
+				}
+				else if (RegresoA == 2) {
+					cout << "\n\tVuelva pronto!";
+				}
+			}
+			else if (Regreso == 2) {
+				Reportes(arreglo, n);
+			}
+			break;
+		}
+	}
+	else if (Opciones == 2) {
+		Reportes(arreglo, n);
+	}
+}
+
+void ReportePorcentajeVentasModalidad(Venta* arreglo, int n) {
+	int SiNo;
+	int Regreso2;
+
+	cout << "\n\t====================================================" << endl;
+	cout << "\t Cantidad de personas que eligieron WhatApp: 12,000" << endl;
+	cout << "\t Cantidad de personas que eligieron App    : 10,000" << endl;
+	cout << "\t====================================================" << endl;
+
+	cout << "\n\tDesea verlo en porcentaje (1) o volver al menu (2)?: "; cin >> SiNo;
+
+	while (SiNo != 1 && SiNo != 2) {
+		cout << "\tOpcion invalida." << endl;
+		cout << "\n\tDesea verlo en porcentaje (1) o volver al menu (2)?: "; cin >> SiNo;
+	}
+
+	if (SiNo == 1) {
+		cout << "\n\t====================================================" << endl;
+		cout << "\t % de personas que eligieron WhatsApp      : 54.55%" << endl;
+		cout << "\t % de personas que eligieron App           : 55.45%" << endl;
+		cout << "\t====================================================" << endl;
+
+		cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso2;
+		while (Regreso2 != 1 && Regreso2 != 2) {
+			cout << "\tOpcion invalida." << endl;
+			cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso2;
+		}
+		if (Regreso2 == 1) {
+			Reportes(arreglo, n);
+		}
+		else if (Regreso2 == 2) {
+			cout << "\n\tVuelva pronto!";
+			exit(0);
+		}
+	}
+
+	else if (SiNo == 2) {
+		Reportes(arreglo, n);
+	}
+}
+
+void ReporteVentasTotales(Venta* arreglo, int n) {
+	int Regreso3;
+	int IGV;
+
+	cout << "\n\t======================================================" << endl;
+	cout << "\t Total de ventas realizadas en el sistema  : 25,500" << endl;
+	cout << "\t Total de ganancias a partir de las compras: $3,000,000" << endl;
+	cout << "\t======================================================" << endl;
+	cout << "\t            GRAFICO DE BARRAS DE GANANCIAS" << endl;
+	cout << "\t======================================================" << endl;
+	cout << "\t3,0M $                                     ____ ____  " << endl;
+	cout << "\t2,5M $                           ____ ____|    |    | " << endl;
+	cout << "\t2,0M $                      ____|    |    |    |    | " << endl;
+	cout << "\t1,5M $            ____ ____|    |    |    |    |    | " << endl;
+	cout << "\t1,0M $       ____|    |    |    |    |    |    |    | " << endl;
+	cout << "\t0,5M $  ____|    |    |    |    |    |    |    |    | " << endl;
+	cout << "\t250K $ |    |    |    |    |    |    |    |    |    | " << endl;
+	cout << "\tAÑOS -  2022 2022 2022 2023 2023 2023 2024 2024 2024  " << endl;
+	cout << "\t======================================================" << endl;
+
+	cout << "\n\tDesea ver la cantidad de perdidas en IGV (1), o volver al menu (2)?: "; cin >> IGV;
+
+	while (IGV != 1 && IGV != 2) {
+		cout << "\tOpcion invalida." << endl;
+		cout << "\n\tDesea ver la cantidad de perdidas en IGV (1), o volver al menu (2)?: "; cin >> IGV;
+	}
+
+	if (IGV == 1) {
+		cout << "\n\t======================================================" << endl;
+		cout << "\t Total de reportes de IGV en la empresa  : 20,000" << endl;
+		cout << "\t Total de perdidas por IGV (18%)         : $4,590" << endl;
+		cout << "\t========================================================" << endl;
+
+		cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso3;
+		while (Regreso3 != 1 && Regreso3 != 2) {
+			cout << "\tOpcion invalida." << endl;
+			cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso3;
+		}
+		if (Regreso3 == 1) {
+			Reportes(arreglo, n);
+		}
+		else if (Regreso3 == 2) {
+			cout << "\n\tVuelva pronto!";
+		}
+	}
+
+	else if (IGV == 2) {
+		Reportes(arreglo, n);
+	}
+}
+
+void ReporteVentasFemeninas(Venta* arreglo, int n) {
+	int Regreso4;
+	int Estadistica;
+
+	cout << "\n\t======================================================" << endl;
+	cout << "\t Total de ventas a clientes femeninas totales : 4,000" << endl;
+	cout << "\t======================================================" << endl;
+	cout << "\t Total de ventas a clientes femeninas en 2022 : 1,000" << endl;
+	cout << "\t Total de ventas a clientes femeninas en 2023 : 1,550" << endl;
+	cout << "\t Total de ventas a clientes femeninas en 2024 : 1,450" << endl;
+	cout << "\t======================================================" << endl;
+
+	cout << "\n\tDesea ver la estadistica de clientes femeninas (1) o volver al menu (2)?: "; cin >> Estadistica;
+
+	while (Estadistica != 1 && Estadistica != 2) {
+		cout << "\tOpcion invalida." << endl;
+		cout << "\n\tDesea ver la estadistica de clientes femeninas (1) o volver al menu (2)?: "; cin >> Estadistica;
+	}
+
+	if (Estadistica == 1) {
+
+		cout << "\n\t======================================================" << endl;
+		cout << "\t       GRAFICO DE BARRAS DE CLIENTES FEMENINAS" << endl;
+		cout << "\t======================================================" << endl;
+		cout << "\t4,000 C                                     ____ ____  " << endl;
+		cout << "\t3,500 C                           ____ ____|    |    | " << endl;
+		cout << "\t3,000 C                      ____|    |    |    |    | " << endl;
+		cout << "\t2,500 C            ____ ____|    |    |    |    |    | " << endl;
+		cout << "\t2,000 C       ____|    |    |    |    |    |    |    | " << endl;
+		cout << "\t1,500 C  ____|    |    |    |    |    |    |    |    | " << endl;
+		cout << "\t1,000 C |    |    |    |    |    |    |    |    |    | " << endl;
+		cout << "\tAÑOS  -  2022 2022 2022 2023 2023 2023 2024 2024 2024  " << endl;
+		cout << "\t======================================================" << endl;
+
+		cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso4;
+		while (Regreso4 != 1 && Regreso4 != 2) {
+			cout << "\tOpcion invalida." << endl;
+			cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso4;
+		}
+		if (Regreso4 == 1) {
+			Reportes(arreglo, n);
+		}
+		else if (Regreso4 == 2) {
+			cout << "\n\tVuelva pronto!";
+		}
+	}
+	else if (Estadistica == 2) {
+		Reportes(arreglo, n);
+	}
+}
+
+void ReportePanelDireccion(Venta* arreglo, int n)
+{
+	bool enero = true, febrero = true, marzo = true, abril = true, mayo = true, todos_los_meses = true;
+	char opcion_reporte, opcion_salir = 'N';
+	bool nuevo_reporte = true;
+
+	while (nuevo_reporte == true)
+	{
+		cout << "\n\t SELECCIONE EL MES";
+		cout << "\n\t-------------------";
+		if (enero == true)
+			cout << "\n\t(1) Enero";
+		if (febrero == true)
+			cout << "\n\t(2) Febrero";
+		if (marzo == true)
+			cout << "\n\t(3) Marzo";
+		if (abril == true)
+			cout << "\n\t(4) Abril";
+		if (mayo == true)
+			cout << "\n\t(5) Mayo";
+		if (todos_los_meses == true)
+			cout << "\n\t(6) Meses faltantes";
+
+		cout << "\n\t(7) Salir";
+		cout << "\n\t-------------------\n";
+		cout << "\n\t(Cada '*' representa 100 clientes que dieron su opinion";
+		cout << "\n\t sobre el uso del panel de dirección automática)\n";
+		do {
+			cout << "\n\tElegir reporte: #"; cin >> opcion_reporte;
+			if (opcion_reporte != '1' && opcion_reporte != '2' && opcion_reporte != '3' && opcion_reporte != '4' && opcion_reporte != '5' && opcion_reporte != '6' && opcion_reporte != '7')
+				cout << "\n\tOpcion invalida, intente de nuevo...\n";
+		} while (opcion_reporte != '1' && opcion_reporte != '2' && opcion_reporte != '3' && opcion_reporte != '4' && opcion_reporte != '5' && opcion_reporte != '6' && opcion_reporte != '7');
+		switch (opcion_reporte)
+		{
+		case '1':
+			enero = false;
+			cout << "\n\tENERO";
+			cout << "\n\tOpiniones positivas:\n";
+			cout << "\t";
+			for (int i = 0; i < 2304 / 100; i++)
+				cout << "*";
+			cout << " (2304)";
+			cout << "\n\tOpiniones negativas:\n";
+			cout << "\t";
+			for (int i = 0; i < 452 / 100; i++)
+				cout << "*";
+			cout << " (454)\n";
+			break;
+		case '2':
+			febrero = false;
+			cout << "\n\tFEBRERO";
+			cout << "\n\tOpiniones positivas:\n";
+			cout << "\t";
+			for (int i = 0; i < 2764 / 100; i++)
+				cout << "*";
+			cout << " (2764)";
+			cout << "\n\tOpiniones negativas:\n";
+			cout << "\t";
+			for (int i = 0; i < 359 / 100; i++)
+				cout << "*";
+			cout << " (359)\n";
+			break;
+		case '3':
+			marzo = false;
+			cout << "\n\tMARZO";
+			cout << "\n\tOpiniones positivas:\n";
+			cout << "\t";
+			for (int i = 0; i < 1864 / 100; i++)
+				cout << "*";
+			cout << " (1864)";
+			cout << "\n\tOpiniones negativas:\n";
+			cout << "\t";
+			for (int i = 0; i < 692 / 100; i++)
+				cout << "*";
+			cout << " (692)\n";
+			break;
+		case '4':
+			abril = false;
+			cout << "\n\tABRIL";
+			cout << "\n\tOpiniones positivas:\n";
+			cout << "\t";
+			for (int i = 0; i < 4560 / 100; i++)
+				cout << "*";
+			cout << " (4560)";
+			cout << "\n\tOpiniones negativas:\n";
+			cout << "\t";
+			for (int i = 0; i < 204 / 100; i++)
+				cout << "*";
+			cout << " (204)\n";
+			break;
+		case '5':
+			mayo = false;
+			cout << "\n\tMAYO";
+			cout << "\n\tOpiniones positivas:\n";
+			cout << "\t";
+			for (int i = 0; i < 2503 / 100; i++)
+				cout << "*";
+			cout << " (2503)";
+			cout << "\n\tOpiniones negativas:\n";
+			cout << "\t";
+			for (int i = 0; i < 189 / 100; i++)
+				cout << "*";
+			cout << " (189)";
+			break;
+		case '6':
+			nuevo_reporte = false;
+			if (enero == true)
+			{
+				cout << "\n\tENERO";
+				cout << "\n\tOpiniones positivas:\n";
+				cout << "\t";
+				for (int i = 0; i < 2304 / 100; i++)
+					cout << "*";
+				cout << " (2304)";
+				cout << "\n\tOpiniones negativas:\n";
+				cout << "\t";
+				for (int i = 0; i < 452 / 100; i++)
+					cout << "*";
+				cout << " (454)";
+			}
+			if (febrero == true)
+			{
+				cout << "\n\tFEBRERO";
+				cout << "\n\tOpiniones positivas:\n";
+				cout << "\t";
+				for (int i = 0; i < 2764 / 100; i++)
+					cout << "*";
+				cout << " (2764)";
+				cout << "\n\tOpiniones negativas:\n";
+				cout << "\t";
+				for (int i = 0; i < 359 / 100; i++)
+					cout << "*";
+				cout << " (359)\n";
+			}
+			if (marzo == true)
+			{
+				cout << "\n\tMARZO";
+				cout << "\n\tOpiniones positivas:\n";
+				cout << "\t";
+				for (int i = 0; i < 1864 / 100; i++)
+					cout << "*";
+				cout << " (1864)";
+				cout << "\n\tOpiniones negativas:\n";
+				cout << "\t";
+				for (int i = 0; i < 692 / 100; i++)
+					cout << "*";
+				cout << " (692)\n";
+			}
+			if (abril == true)
+			{
+				cout << "\n\tABRIL";
+				cout << "\n\tOpiniones positivas:\n";
+				cout << "\t";
+				for (int i = 0; i < 4560 / 100; i++)
+					cout << "*";
+				cout << " (4560)";
+				cout << "\n\tOpiniones negativas:\n";
+				cout << "\t";
+				for (int i = 0; i < 204 / 100; i++)
+					cout << "*";
+				cout << " (204)\n";
+			}
+			if (mayo == true)
+			{
+				cout << "\n\tMAYO";
+				cout << "\n\tOpiniones positivas:\n";
+				cout << "\t";
+				for (int i = 0; i < 2503 / 100; i++)
+					cout << "*";
+				cout << " (2503)";
+				cout << "\n\tOpiniones negativas:\n";
+				cout << "\t";
+				for (int i = 0; i < 689 / 100; i++)
+					cout << "*";
+				cout << " (189)\n";
+			}
+			break;
+		case '7':
+			nuevo_reporte = false;
+			break;
+		}
+		if (enero == false && febrero == false && marzo == false && abril == false && mayo == false)
+			nuevo_reporte = false;
+		if (nuevo_reporte == true)
+		{
+			do {
+				cout << "\n\tMostrar nuevo reporte?\n";
+				cout << "\t(S: si / N: no): "; cin >> opcion_salir;
+				if (opcion_salir == 's' || opcion_salir == 'n')
+					opcion_salir = toupper(opcion_salir);
+				if (opcion_salir != 'S' && opcion_salir != 'N')
+					cout << "\n\tOpcion invalida, intente de nuevo...\n";
+			} while (opcion_salir != 'S' && opcion_salir != 'N');
+		}
+		switch (opcion_salir)
+		{
+		case 'S':
+			break;
+		case 'N':
+			nuevo_reporte = false;
+			Menu(arreglo, n);
+			break;
+		}
+	}
+}
+
+void ReporteEventos(Venta* arreglo, int n) {
+	int Regreso5;
+	int Eventos;
+	int AñoEvento;
+	int Tipo;
+	int com;
+
+	cout << "\n\t===============================================" << endl;
+	cout << "\t Cantidad total de eventos asistidos   : 20 " << endl;
+	cout << "\t===============================================" << endl;
+	cout << "\t Cantidad de eventos asistidos en 2022 : 6" << endl;
+	cout << "\t Cantidad de eventos asistidos en 2023 : 7" << endl;
+	cout << "\t Cantidad de eventos asistidos en 2024 : 7" << endl;
+	cout << "\t===============================================" << endl;
+
+	cout << "\n\tDesea ver el tipo de evento asistido de cada año (1) o volver al menu (2)?: "; cin >> Eventos;
+
+	while (Eventos != 1 && Eventos != 2) {
+		cout << "\tOpcion invalida." << endl;
+		cout << "\n\tDesea ver el tipo de evento asistido de cada año (1) o volver al menu (2)?: "; cin >> Eventos;
+	}
+
+	if (Eventos == 1) {
+		cout << "\tIngrese año: "; cin >> AñoEvento;
+
+		while (AñoEvento != 2022 && AñoEvento != 2023 && AñoEvento != 2024) {
+			cout << "\tOpcion invalida." << endl;
+			cout << "\n\tIngrese año: "; cin >> AñoEvento;
+		}
+
+		if (AñoEvento == 2022) {
+			cout << "\n\t========================================" << endl;
+			cout << "\t Cantidad de eventos asistidos 2022 : 6 " << endl;
+			cout << "\t========================================" << endl;
+			cout << "\t Cantidad de eventos de comics  : 2" << endl;
+			cout << "\t Cantidad de eventos de mangas  : 3" << endl;
+			cout << "\t========================================" << endl;
+
+			cout << "\n\tDesea ver los eventos asistidos de cada tipo (1) o regresar el manu (2)?: "; cin >> Tipo;
+
+			while (Tipo != 1 && Tipo != 2) {
+				cout << "\tOpcion invalida." << endl;
+				cout << "\n\tDesea ver los eventos asistidos de cada tipo (1) o regresar el manu (2)?: "; cin >> Tipo;
+			}
+
+			if (Tipo == 1) {
+				cout << "\n\tTipo comic (1) o tipo manga (2)?: "; cin >> com;
+
+				while (com != 1 && com != 2) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tTipo comic (1) o tipo manga (2)?: "; cin >> com;
+				}
+
+				if (com == 1) {
+					cout << "\n\t========================================" << endl;
+					cout << "\t    EVENTOS DE COMICS ASISTIDOS 2022 " << endl;
+					cout << "\t========================================" << endl;
+					cout << "\t 1) Evento de Comic de San Francisco" << endl;
+					cout << "\t 2) Evento de Comics de San Lorenso " << endl;
+					cout << "\t========================================" << endl;
+
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					while (Regreso5 != 1 && Regreso5 != 2) {
+						cout << "\tOpcion invalida." << endl;
+						cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					}
+					if (Regreso5 == 1) {
+						Reportes(arreglo, n);
+					}
+					else if (Regreso5 == 2) {
+						cout << "\n\tVuelva pronto!";
+					}
+				}
+
+				else if (com == 2) {
+					cout << "\n\t========================================" << endl;
+					cout << "\t    EVENTOS DE MANGAS ASISTIDOS 2022 " << endl;
+					cout << "\t========================================" << endl;
+					cout << "\t 1) Evento de Mangas de Lima San Miguel" << endl;
+					cout << "\t 2) Evento Plaza Mayor / AP " << endl;
+					cout << "\t 3) Evento Mangas de Real Plaza" << endl;
+					cout << "\t========================================" << endl;
+
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					while (Regreso5 != 1 && Regreso5 != 2) {
+						cout << "\tOpcion invalida." << endl;
+						cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					}
+					if (Regreso5 == 1) {
+						Reportes(arreglo, n);
+					}
+					else if (Regreso5 == 2) {
+						cout << "\n\tVuelva pronto!";
+					}
+				}
+			}
+
+			else if (Tipo == 2) {
+				Reportes(arreglo, n);
+			}
+		}
+
+		else if (AñoEvento == 2023) {
+			cout << "\n\t========================================" << endl;
+			cout << "\t Cantidad de eventos asistidos 2023 : 7 " << endl;
+			cout << "\t========================================" << endl;
+			cout << "\t Cantidad de eventos de comics  : 3" << endl;
+			cout << "\t Cantidad de eventos de mangas  : 4" << endl;
+			cout << "\t========================================" << endl;
+
+			cout << "\n\tDesea ver los eventos asistidos de cada tipo (1) o regresar el manu (2)?: "; cin >> Tipo;
+
+			while (Tipo != 1 && Tipo != 2) {
+				cout << "\tOpcion invalida." << endl;
+				cout << "\n\tDesea ver los eventos asistidos de cada tipo (1) o regresar el manu (2)?: "; cin >> Tipo;
+			}
+
+			if (Tipo == 1) {
+				cout << "\n\tTipo comic (1) o tipo manga (2)?: "; cin >> com;
+
+				while (com != 1 && com != 2) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tTipo comic (1) o tipo manga (2)?: "; cin >> com;
+				}
+
+				if (com == 1) {
+					cout << "\n\t========================================" << endl;
+					cout << "\t    EVENTOS DE COMICS ASISTIDOS 2023 " << endl;
+					cout << "\t========================================" << endl;
+					cout << "\t 1) Evento Comics / UCM / DC" << endl;
+					cout << "\t 2) Evento de Comics de San Lorenso " << endl;
+					cout << "\t 3) Evento de Comic de San Francisco" << endl;
+					cout << "\t========================================" << endl;
+
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					while (Regreso5 != 1 && Regreso5 != 2) {
+						cout << "\tOpcion invalida." << endl;
+						cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					}
+					if (Regreso5 == 1) {
+						Reportes(arreglo, n);
+					}
+					else if (Regreso5 == 2) {
+						cout << "\n\tVuelva pronto!";
+					}
+				}
+
+				else if (com == 2) {
+					cout << "\n\t========================================" << endl;
+					cout << "\t    EVENTOS DE MANGAS ASISTIDOS 2023 " << endl;
+					cout << "\t========================================" << endl;
+					cout << "\t 1) Evento de Mangas de Lima San Miguel" << endl;
+					cout << "\t 2) Evento Plaza Mayor / AP " << endl;
+					cout << "\t 3) Evento Mangas de Real Plaza" << endl;
+					cout << "\t 4) Evento Mangas de Plaza Central" << endl;
+					cout << "\t========================================" << endl;
+
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					while (Regreso5 != 1 && Regreso5 != 2) {
+						cout << "\tOpcion invalida." << endl;
+						cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					}
+					if (Regreso5 == 1) {
+						Reportes(arreglo, n);
+					}
+					else if (Regreso5 == 2) {
+						cout << "\n\tVuelva pronto!";
+					}
+				}
+			}
+
+			else if (Tipo == 2) {
+				Reportes(arreglo, n);
+			}
+		}
+
+		else if (AñoEvento == 2024) {
+			cout << "\n\t========================================" << endl;
+			cout << "\t Cantidad de eventos asistidos 2023 : 7 " << endl;
+			cout << "\t========================================" << endl;
+			cout << "\t Cantidad de eventos de comics  : 5" << endl;
+			cout << "\t Cantidad de eventos de mangas  : 2" << endl;
+			cout << "\t========================================" << endl;
+
+			cout << "\n\tDesea ver los eventos asistidos de cada tipo (1) o regresar el manu (2)?: "; cin >> Tipo;
+
+			while (Tipo != 1 && Tipo != 2) {
+				cout << "\tOpcion invalida." << endl;
+				cout << "\n\tDesea ver los eventos asistidos de cada tipo (1) o regresar el manu (2)?: "; cin >> Tipo;
+			}
+
+			if (Tipo == 1) {
+				cout << "\n\tTipo comic (1) o tipo manga (2)?: "; cin >> com;
+
+				while (com != 1 && com != 2) {
+					cout << "\tOpcion invalida." << endl;
+					cout << "\n\tTipo comic (1) o tipo manga (2)?: "; cin >> com;
+				}
+
+				if (com == 1) {
+					cout << "\n\t========================================" << endl;
+					cout << "\t    EVENTOS DE COMICS ASISTIDOS 2024 " << endl;
+					cout << "\t========================================" << endl;
+					cout << "\t 1) Evento Comics / UCM / DC" << endl;
+					cout << "\t 2) Evento de Comics de San Lorenso " << endl;
+					cout << "\t 3) Evento de Comic de San Francisco" << endl;
+					cout << "\t 4) Evento Comics de Plaza Central" << endl;
+					cout << "\t 5) Evento Comics de Real Plaza" << endl;
+					cout << "\t========================================" << endl;
+
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					while (Regreso5 != 1 && Regreso5 != 2) {
+						cout << "\tOpcion invalida." << endl;
+						cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					}
+					if (Regreso5 == 1) {
+						Reportes(arreglo, n);
+					}
+					else if (Regreso5 == 2) {
+						cout << "\n\tVuelva pronto!";
+					}
+				}
+
+				else if (com == 2) {
+					cout << "\n\t========================================" << endl;
+					cout << "\t    EVENTOS DE MANGAS ASISTIDOS 2024 " << endl;
+					cout << "\t========================================" << endl;
+					cout << "\t 1) Evento de Mangas de Lima San Miguel" << endl;
+					cout << "\t 2) Evento Plaza Mayor / AP " << endl;
+					cout << "\t========================================" << endl;
+
+					cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					while (Regreso5 != 1 && Regreso5 != 2) {
+						cout << "\tOpcion invalida." << endl;
+						cout << "\n\tDesea regresar el Menu (1) o Salir (2)?: "; cin >> Regreso5;
+					}
+					if (Regreso5 == 1) {
+						Reportes(arreglo, n);
+					}
+					else if (Regreso5 == 2) {
+						cout << "\n\tVuelva pronto!";
+					}
+				}
+			}
+
+			else if (Tipo == 2) {
+				Reportes(arreglo, n);
+			}
+		}
+	}
+
+	else if (Eventos == 2) {
+		Reportes(arreglo, n);
+	}
+}
